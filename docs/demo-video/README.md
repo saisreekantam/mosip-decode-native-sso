@@ -83,32 +83,33 @@ Open **Acme Super App** on the emulator and tap **Create demo user**. Write down
 **Say:**
 > "The first app logs in through the real eSignet screen. It uses PAR and DPoP with a key stored in the phone's secure hardware. Besides the usual tokens, eSignet returns a device secret: signed, then encrypted, and tied to that hardware key."
 
-### Scene 3: Pharmacy signs in silently (0:45–1:15)
+### Scene 3: Consent is respected (0:45–1:00)
 
 **Do:**
-1. Open **Acme Pharmacy**. Keep **profile** selected.
+1. Open **Acme Pharmacy**. Select **profile + email**.
+2. Tap **Continue with your Acme account**.
+3. The orange **"Your consent is needed"** card appears.
+
+**Say:**
+> "The Pharmacy app asks for email, but the user didn't share email with the Super App. So eSignet refuses to reuse that consent, and Pharmacy has to ask the user itself, which is the bonus re-consent flow."
+
+### Scene 4: Pharmacy signs in silently (1:00–1:30)
+
+**Do:**
+1. Select **profile**.
 2. Tap **Continue with your Acme account**.
 3. Scroll through **"Why this sign-in was trusted"**.
 
 **Say:**
-> "The Pharmacy app never logged in. Android lets it talk to the Super App only because both are signed by the same company. The Super App signs a proof with its key, and the key never leaves it. eSignet issues Pharmacy its own token in about 20 milliseconds: no OTP, no consent screen, and only the details the user agreed to share."
+> "With only what the user agreed to share, Pharmacy signs in silently. Android lets it talk to the Super App only because both are signed by the same company. The Super App signs a proof with its key, and the key never leaves it. eSignet issues Pharmacy its own token in about 20 milliseconds: no OTP, no consent screen."
 
-### Scene 4: Consent is respected (1:15–1:30)
-
-**Do:**
-1. Pharmacy → **Sign out here**.
-2. Select **profile + email** → **Continue with your Acme account**.
-3. The orange **"Your consent is needed"** card appears.
-
-**Say:**
-> "The user didn't share email with the Super App, so eSignet refuses to reuse that consent. Pharmacy has to ask the user itself, which is the bonus re-consent flow."
+> Do not tap **Sign out here** and sign in again: each app can use one Super App login only once (replay protection). For another try, log out of all Acme apps in the Super App and sign in again.
 
 ### Scene 5: Log out of every app (1:30–1:45)
 
 **Do:**
-1. Pharmacy: select **profile** → **Continue** (signed in again).
-2. Switch to **Super App** → **Log out of all Acme apps**.
-3. Switch to **Pharmacy** → **Refresh profile** → red **"userinfo rejected (401)"**.
+1. Switch to **Super App** → **Log out of all Acme apps**.
+2. Switch to **Pharmacy** → **Refresh profile** → red **"userinfo rejected (401)"**.
 
 **Say:**
 > "One tap logs the user out of every company app, including tokens already handed out. That goes beyond the spec."
@@ -150,7 +151,7 @@ go run .                              # ends with: 20/20 scenarios passed
 
 | Problem | Fix |
 |---|---|
-| Pharmacy says the device secret "cannot be redeemed" | That login was already used once by Pharmacy. In the Super App, log out of all Acme apps, sign in again, then retry. |
+| Pharmacy says the device secret "cannot be redeemed" | Replay protection: Pharmacy already used this Super App login once (for example after **Sign out here** → **Continue**). In the Super App, tap **Log out of all Acme apps**, sign in again, then retry in Pharmacy. |
 | The eSignet page doesn't load in the emulator | Rerun `for p in 8080 3000 8082; do $ADB reverse tcp:$p tcp:$p; done` and check `curl -s localhost:8080/health`. |
 | The dashboard shows an error | Make sure eSignet is up (`curl -s localhost:8080/health`), then click **Run all scenarios** again. |
 | You want to restart from a clean state | `$ADB shell pm clear com.acme.superapp && $ADB shell pm clear com.acme.pharmacy`, then create a new demo user. |

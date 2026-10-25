@@ -93,7 +93,12 @@ class ChildSession private constructor(private val context: Context) {
             val res = client.nativeSsoExchange(idToken, deviceSecret, scope, proof.getString(SsoProtocol.KEY_PROOF)!!)
             val ms = System.currentTimeMillis() - started
             if (res.status != 200) {
-                trace += TraceStep(false, "eSignet rejected the token exchange (${res.status})", "${res.error}: ${res.errorDescription}")
+                val hint = if (res.errorDescription.contains("cannot be redeemed")) {
+                    "\nThis app already used this Acme sign-in once (replay protection). " +
+                        "Log out of all Acme apps in the Super App and sign in again."
+                } else ""
+                trace += TraceStep(false, "eSignet rejected the token exchange (${res.status})",
+                    "${res.error}: ${res.errorDescription}$hint")
                 return if (res.error == "interaction_required") {
                     SsoOutcome.ConsentRequired(trace, res.errorDescription.substringAfter(": ", ""))
                 } else SsoOutcome.Failed(trace)

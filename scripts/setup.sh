@@ -5,8 +5,8 @@
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
-THUNDERID_REPO=${THUNDERID_REPO:-https://github.com/YOUR_GITHUB_USER/thunderid.git}
-ESIGNET_REPO=${ESIGNET_REPO:-https://github.com/YOUR_GITHUB_USER/esignet.git}
+THUNDERID_REPO=${THUNDERID_REPO:-https://github.com/saisreekantam/thunderid.git}
+ESIGNET_REPO=${ESIGNET_REPO:-https://github.com/saisreekantam/esignet.git}
 [ -d thunderid ] || git clone --branch feature/native-sso "$THUNDERID_REPO" thunderid
 [ -d esignet ] || git clone --branch feature/native-sso "$ESIGNET_REPO" esignet
 echo "Done. Next: scripts/dev-up.sh"

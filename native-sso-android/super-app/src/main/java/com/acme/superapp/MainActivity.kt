@@ -37,7 +37,6 @@ import com.acme.sso.core.LoginLauncher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private val log = mutableStateListOf<String>()
@@ -118,11 +117,13 @@ class MainActivity : ComponentActivity() {
                         demoUin.value?.let { Mono("Demo UIN $it · OTP 111111") }
                         OutlinedButton(onClick = {
                             run("Creating demo identity") {
-                                val uin = (1_000_000_000L + Random.nextLong(8_999_999_999L)).toString()
+                                // One fixed, easy-to-type demo identity; reused when it already exists.
+                                val uin = DEMO_UIN
                                 val res = DevProvisioning.createMockIdentity(MOCK_IDENTITY_URL, uin, "Asha Devi")
-                                check(res.status == 200 && !res.body.contains("errorCode")) { res.body }
+                                val exists = res.body.contains("duplicate_individual_id")
+                                check(res.status == 200 && (!res.body.contains("errorCode") || exists)) { res.body }
                                 demoUin.value = uin
-                                "UIN $uin (OTP 111111)"
+                                (if (exists) "using existing" else "created") + " UIN $uin (OTP 111111)"
                             }
                         }, enabled = !busy.value) { Text("Create demo user") }
                         Button(onClick = {
@@ -148,5 +149,6 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val MOCK_IDENTITY_URL = "http://localhost:8082"
+        private const val DEMO_UIN = "1234567890"
     }
 }

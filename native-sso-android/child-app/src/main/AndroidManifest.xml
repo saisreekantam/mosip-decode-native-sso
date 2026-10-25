@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Granted only when this app is signed with the same certificate as the Super App. -->
+    <uses-permission android:name="com.acme.permission.NATIVE_SSO" />
+
+    <queries>
+        <package android:name="com.acme.superapp" />
+    </queries>
+
+    <application
+        android:label="${appLabel}"
+        android:networkSecurityConfig="@xml/native_sso_network_security"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${applicationId}" android:host="oauth" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

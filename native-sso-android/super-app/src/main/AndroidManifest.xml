@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Only apps signed with the same certificate as the Super App may bind its SSO service. -->
+    <permission
+        android:name="com.acme.permission.NATIVE_SSO"
+        android:label="Sign in with your Acme account"
+        android:protectionLevel="signature" />
+
+    <application
+        android:label="Acme Super App"
+        android:networkSecurityConfig="@xml/native_sso_network_security"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.acme.superapp" android:host="oauth" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".SsoService"
+            android:exported="true"
+            android:permission="com.acme.permission.NATIVE_SSO" />
+    </application>
+</manifest>

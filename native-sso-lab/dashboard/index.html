@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSO Guardian</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #14171c; --muted: #5b6472; --line: #e3e6eb;
+    --accent: #1f5fbf; --ok: #1b7a3a; --ok-bg: #e7f5ec; --bad: #b3261e; --bad-bg: #fdecea;
+    --warn-bg: #fff4e0; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1216; --panel: #171b21; --ink: #e8ebef; --muted: #9aa4b2; --line: #2a3039;
+      --accent: #6ea2ff; --ok: #5fd08a; --ok-bg: #15301f; --bad: #ff8a80; --bad-bg: #3a1b1a; --warn-bg: #3a2e15;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 4px 0 20px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; min-width: 130px; }
+  .stat b { display: block; font-size: 22px; }
+  .stat span { color: var(--muted); font-size: 13px; }
+  button { font: inherit; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 8px;
+           padding: 8px 14px; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--accent); }
+  button:disabled { opacity: .5; cursor: progress; }
+  section { margin-top: 26px; }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .row { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+  .id { font-family: var(--mono); font-size: 13px; color: var(--muted); min-width: 34px; }
+  .name { font-weight: 600; }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .pill { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+  .pass { background: var(--ok-bg); color: var(--ok); }
+  .fail { background: var(--bad-bg); color: var(--bad); }
+  .result { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .observed { font-family: var(--mono); font-size: 13px; word-break: break-word; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  td.mono { font-family: var(--mono); }
+  .s2 { color: var(--ok); } .s4, .s5 { color: var(--bad); }
+  .setup { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .note { background: var(--warn-bg); border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+  .scroll { overflow-x: auto; }
+  @media (max-width: 640px) { .row { flex-direction: column; } h1 { font-size: 22px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>SSO Guardian</h1>
+  <p class="sub">Native SSO for eSignet: every trust decision, replayed against the live server.</p>
+
+  <div class="bar">
+    <div class="stat"><b id="passed">–</b><span>scenarios passed</span></div>
+    <div class="stat"><b id="killed">–</b><span>mutants killed</span></div>
+    <div class="stat"><b id="last">–</b><span>last run</span></div>
+    <button id="runAll">Run all scenarios</button>
+    <button id="runMutation" class="ghost">Run mutation tests</button>
+  </div>
+  <p class="note" id="status">Each replay registers fresh apps and a fresh user, signs the Super App in with OTP, then runs the scenario. Tokens, secrets and proofs are never shown or stored.</p>
+
+  <div id="groups"></div>
+
+  <section>
+    <h2>Mutation tests: is every check guarded by a test?</h2>
+    <p class="meta">Each mutant disables one security check in the ThunderID or eSignet source and runs the unit tests. A killed mutant means some test fails when that check is removed.</p>
+    <div class="card scroll"><table id="mutants"><thead><tr><th>ID</th><th>Security property</th><th>Result</th><th>Caught by</th></tr></thead><tbody></tbody></table></div>
+  </section>
+</main>
+<script>
+const groups = [
+  ["H", "Happy path"], ["A", "Attacks"], ["C", "Consent"], ["R", "Races and replays"], ["L", "Logout and revocation"],
+];
+const results = {};
+let busy = false;
+
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === "class" ? n.className = v : n.setAttribute(k, v);
+  for (const k of kids) n.append(k);
+  return n;
+};
+
+async function load() {
+  const list = await (await fetch("/api/scenarios")).json();
+  const root = document.getElementById("groups");
+  for (const [prefix, title] of groups) {
+    const items = list.filter((s) => s.id.startsWith(prefix));
+    if (!items.length) continue;
+    const sec = el("section", {}, el("h2", {}, title));
+    for (const s of items) {
+      const btn = el("button", { class: "ghost" }, "Replay");
+      btn.onclick = () => run(s.id);
+      const card = el("div", { class: "card", id: "card-" + s.id },
+        el("div", { class: "row" },
+          el("div", { class: "id" }, s.id),
+          el("div", { style: "flex:1" }, el("div", { class: "name" }, s.name),
+            el("div", { class: "meta" }, s.requirement), el("div", { class: "meta" }, "Expected: " + s.expected)),
+          el("span", { class: "pill", id: "pill-" + s.id }), btn),
+        el("div", { id: "res-" + s.id }));
+      sec.append(card);
+    }
+    root.append(sec);
+  }
+  loadMutation();
+}
+
+function render(r) {
+  results[r.id] = r;
+  const pill = document.getElementById("pill-" + r.id);
+  pill.className = "pill " + (r.pass ? "pass" : "fail");
+  pill.textContent = r.pass ? "PASS" : "FAIL";
+  const box = document.getElementById("res-" + r.id);
+  box.replaceChildren();
+  const res = el("div", { class: "result" }, el("div", { class: "observed" }, r.observed));
+  if (r.exchanges?.length) {
+    const tb = el("tbody");
+    const shown = r.exchanges.length > 12 ? r.exchanges.slice(-12) : r.exchanges;
+    for (const x of shown) {
+      tb.append(el("tr", {}, el("td", { class: "mono" }, x.method), el("td", { class: "mono" }, x.path),
+        el("td", { class: "mono s" + String(x.status)[0] }, String(x.status)),
+        el("td", {}, [x.error, x.error_description].filter(Boolean).join(": "))));
+    }
+    const note = r.exchanges.length > shown.length ? ` (last ${shown.length} of ${r.exchanges.length})` : "";
+    res.append(el("div", { class: "scroll" }, el("table", {},
+      el("thead", {}, el("tr", {}, el("th", {}, "Method"), el("th", {}, "Endpoint"), el("th", {}, "Status"), el("th", {}, "eSignet said" + note))), tb)));
+  }
+  box.append(res);
+}
+
+function summary() {
+  const all = Object.values(results);
+  document.getElementById("passed").textContent = all.length ? `${all.filter((r) => r.pass).length}/${all.length}` : "–";
+  document.getElementById("last").textContent = new Date().toLocaleTimeString();
+}
+
+async function run(id) {
+  if (busy) return;
+  setBusy(true, id === "all" ? "Running all scenarios against eSignet…" : `Replaying ${id}…`);
+  try {
+    const res = await fetch("/api/run?id=" + encodeURIComponent(id), { method: "POST" });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error);
+    for (const r of body.results) {
+      if (r.setup) continue;
+      render(r);
+    }
+    summary();
+    const target = id === "all" ? null : body.results.find((r) => r.id === id);
+    setBusy(false, target ? `${id}: ${target.pass ? "passed" : "FAILED"}, ${target.observed}` : "Run complete.");
+    if (target) document.getElementById("card-" + id).scrollIntoView({ behavior: "smooth", block: "center" });
+  } catch (e) {
+    setBusy(false, "Error: " + e.message);
+  }
+}
+
+async function loadMutation(trigger) {
+  if (trigger) setBusy(true, "Running mutation tests (each mutant rebuilds and tests one repo; a few minutes)…");
+  try {
+    const res = await fetch("/api/mutation", { method: trigger ? "POST" : "GET" });
+    if (!res.ok) { if (trigger) setBusy(false, "Mutation run failed"); return; }
+    const report = await res.json();
+    const tb = document.querySelector("#mutants tbody");
+    tb.replaceChildren();
+    for (const m of report.results) {
+      const killed = m.status === "killed";
+      tb.append(el("tr", {}, el("td", { class: "mono" }, m.id), el("td", {}, m.property),
+        el("td", {}, el("span", { class: "pill " + (killed ? "pass" : "fail") }, m.status)),
+        el("td", { class: "mono" }, (m.killed_by || []).slice(-1)[0] || "")));
+    }
+    const killed = report.results.filter((m) => m.status === "killed").length;
+    document.getElementById("killed").textContent = `${killed}/${report.results.length}`;
+    if (trigger) setBusy(false, `Mutation tests: ${killed}/${report.results.length} killed.`);
+  } catch (e) {
+    if (trigger) setBusy(false, "Error: " + e.message);
+  }
+}
+
+function setBusy(on, message) {
+  busy = on;
+  document.querySelectorAll("button").forEach((b) => (b.disabled = on));
+  document.getElementById("status").textContent = message;
+}
+
+document.getElementById("runAll").onclick = () => run("all");
+document.getElementById("runMutation").onclick = () => loadMutation(true);
+load().then(() => { if (new URLSearchParams(location.search).get("autorun") === "all") run("all"); });
+</script>
+</body>
+</html>

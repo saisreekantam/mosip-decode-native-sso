@@ -1,0 +1,10 @@
+# The two forks are separate repositories (scripts/setup.sh clones them here).
+/thunderid/
+/esignet/
+/thunder-native-sso.patch
+.DS_Store
+node_modules/
+/native-sso-lab/sso-lab
+/native-sso-android/local.properties
+/native-sso-android/.gradle/
+/native-sso-android/**/build/

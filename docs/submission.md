@@ -32,19 +32,20 @@ Optional items, also included:
 ## Email to decode@mosip.io
 
 ```
-Subject: MOSIP Decode 2026 submission: <Team name>, PS03 Native SSO in eSignet Go
+Subject: MOSIP Decode 2026 submission: TechTitans, PS03 Native SSO in eSignet Go
 
-Team name: <Team name>
+Team name: TechTitans
+Team members: Sai Venkat, Revanth, Aditya, Ashok
 Problem statement addressed: 03 eSignet | Enable Native SSO in eSignet Go for Mobile Apps
 
 Source code:
-  Submission repository (apps, test lab, docs): <URL>
-  ThunderID fork, branch feature/native-sso:     <URL>
-  eSignet fork, branch feature/native-sso:       <URL>
+  Submission repository (apps, test lab, docs): https://github.com/saisreekantam/mosip-decode-native-sso
+  ThunderID fork, branch feature/native-sso:     https://github.com/saisreekantam/thunderid/tree/feature/native-sso
+  eSignet fork, branch feature/native-sso:       https://github.com/saisreekantam/esignet/tree/feature/native-sso
 Demo video:      <Drive URL>
 Pitch deck:      <Drive URL>
 College IDs:     <Drive URL>
-Docs:            <repo URL>/blob/main/README.md (installation), docs/design.md (design + API), docs/testing.md (tests)
+Docs:            https://github.com/saisreekantam/mosip-decode-native-sso/blob/main/README.md (installation), docs/design.md (design + API), docs/testing.md (tests)
 ```
 
 ## Pitch deck outline (10 slides)

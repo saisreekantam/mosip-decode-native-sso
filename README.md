@@ -2,6 +2,8 @@
 
 **MOSIP Decode 2026, problem statement 03: Enable Native SSO in eSignet Go for Mobile Apps.**
 
+**Team TechTitans:** Sai Venkat, Revanth, Aditya, Ashok
+
 A user signs in to one app with eSignet (OTP plus consent). Every other app from the same vendor on that phone then signs them in silently, with no OTP and no consent screen, in about 20 ms. The shared login is protected by:
 
 - a device secret that is bound to the device's own hardware key and encrypted;

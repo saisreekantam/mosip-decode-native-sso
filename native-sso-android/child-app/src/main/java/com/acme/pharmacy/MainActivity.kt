@@ -60,6 +60,9 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(colorScheme = scheme) { Surface(Modifier.fillMaxSize()) { Screen() } }
         }
         work { status.value = session.ensureRegistered() }
+        // The token survives the screen; reload the profile with it so the app reflects the
+        // session's real state (for example, cut off after "Log out of all Acme apps").
+        if (session.accessToken != null && intent?.data == null) work { show(session.refreshProfile()) }
         handleRedirect(intent)
     }
 

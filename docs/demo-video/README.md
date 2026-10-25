@@ -109,7 +109,7 @@ Open **Acme Super App** on the emulator and tap **Create demo user**. Write down
 
 **Do:**
 1. Switch to **Super App** → **Log out of all Acme apps**.
-2. Switch to **Pharmacy** → **Refresh profile** → red **"userinfo rejected (401)"**.
+2. Switch to **Pharmacy** → **Refresh profile** → red **"userinfo rejected (401)"**. If Pharmacy was reopened, it reloads the profile by itself and shows the same 401; don't tap **Continue** here.
 
 **Say:**
 > "One tap logs the user out of every company app, including tokens already handed out. That goes beyond the spec."

@@ -1,0 +1,210 @@
+{
+  "generated_at": "2026-10-23T19:25:05Z",
+  "results": [
+    {
+      "id": "M1",
+      "property": "DPoP key must equal the device secret's cnf.jkt",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches/DPoP_key_is_not_the_device_key"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M2",
+      "property": "ID token must carry the device secret's ds_hash",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches/ds_hash_of_another_device_secret"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M3",
+      "property": "ID token sid/sub/aud must match the device secret session",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
+        "TestNativeSSOTestSuite/TestRejectsBindingMismatches/ID_token_of_another_session"
+      ],
+      "seconds": 1.0
+    },
+    {
+      "id": "M4",
+      "property": "Original client must still be registered for device_sso",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestRejectsWhenOriginalClientLostDeviceSSO"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M5",
+      "property": "Requested scopes must be a subset of the original grant",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestEnforcesScopeRules",
+        "TestNativeSSOTestSuite/TestEnforcesScopeRules/scope_not_granted_to_the_original_client"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M6",
+      "property": "device_sso cannot be requested on token exchange",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape",
+        "TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape/device_sso_requested"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M7",
+      "property": "A redemption must be claimed before a token is issued",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestChildAttributesFilterPlainAttributes",
+        "TestNativeSSOTestSuite/TestChildAttributesRequireInteractionWhenUnavailable"
+      ],
+      "seconds": 1.5
+    },
+    {
+      "id": "M8",
+      "property": "Tokens die with their SSO session",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestSessionEnforcement",
+        "TestNativeSSOTestSuite/TestSessionEnforcement/ended_session_revokes_its_tokens"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M9",
+      "property": "Only clients registered for device_sso can request it",
+      "repo": "thunderid",
+      "file": "internal/oauth/oauth2/granthandlers/native_sso.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOTestSuite",
+        "TestNativeSSOTestSuite/TestValidateDeviceSSORequest",
+        "TestNativeSSOTestSuite/TestValidateDeviceSSORequest/client_not_registered_for_device_sso"
+      ],
+      "seconds": 0.9
+    },
+    {
+      "id": "M10",
+      "property": "Apps of another vendor (rp_id) cannot redeem",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList",
+        "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/foreign"
+      ],
+      "seconds": 1.4
+    },
+    {
+      "id": "M11",
+      "property": "Only allow-listed apps can redeem",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList",
+        "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/unlisted"
+      ],
+      "seconds": 0.7
+    },
+    {
+      "id": "M12",
+      "property": "Each app redeems a device secret at most once",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestRedeemOncePerClient"
+      ],
+      "seconds": 0.7
+    },
+    {
+      "id": "M13",
+      "property": "Expired device secrets are rejected",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets",
+        "TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets/expired"
+      ],
+      "seconds": 0.7
+    },
+    {
+      "id": "M14",
+      "property": "Only device secrets (token_use) are accepted",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestValidateRejectsSecretsOfAnotherIssuer"
+      ],
+      "seconds": 0.8
+    },
+    {
+      "id": "M15",
+      "property": "A device secret of an ended or replaced session is rejected",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestEndSessionSignsOutTheWholeFamily",
+        "TestDeviceSecretProviderTestSuite/TestNewSessionSupersedesOldDeviceSecret"
+      ],
+      "seconds": 1.4
+    },
+    {
+      "id": "M16",
+      "property": "A child only receives claims the user accepted",
+      "repo": "esignet",
+      "file": "internal/engine/native_sso_consent_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestNativeSSOConsentProviderTestSuite",
+        "TestNativeSSOConsentProviderTestSuite/TestRecordRefusesUncoveredRequests",
+        "TestNativeSSOConsentProviderTestSuite/TestResolve"
+      ],
+      "seconds": 0.8
+    }
+  ]
+}

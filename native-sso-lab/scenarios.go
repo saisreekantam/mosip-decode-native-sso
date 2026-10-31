@@ -607,6 +607,58 @@ func scenarios() []scenario {
 			},
 		},
 		{
+			id: "S1", name: "Child App signs in again silently after its access token expires",
+			requirement: "Extension: one live token per app per SSO session (redemption_policy once_per_token_lifetime)",
+			expected:    "200, replay 400 invalid_grant while the token is live, 200 with a new token after expires_in",
+			run: func(lab *Lab) (string, error) {
+				if _, err := lab.superLogin(LoginOptions{}); err != nil {
+					return "", err
+				}
+				first, _, err := lab.childSSO(lab.Child, "openid profile")
+				if err != nil {
+					return "", err
+				}
+				if first.Status != 200 {
+					return "", fmt.Errorf("first sign-in: %d %s", first.Status, first.Raw)
+				}
+				replay, _, err := lab.childSSO(lab.Child, "openid profile")
+				if err != nil {
+					return "", err
+				}
+				if _, err := expectError(replay, 400, "invalid_grant"); err != nil {
+					return "", fmt.Errorf("replay while the token is live: %w", err)
+				}
+
+				lifetime, _ := first.JSON["expires_in"].(float64)
+				if lifetime <= 0 || lifetime > 3600 {
+					return "", fmt.Errorf("unexpected expires_in %v", first.JSON["expires_in"])
+				}
+				time.Sleep(time.Duration(lifetime)*time.Second + 2*time.Second)
+
+				again, svc, err := lab.childSSO(lab.Child, "openid profile")
+				if err != nil {
+					return "", err
+				}
+				if again.Status != 200 {
+					return "", fmt.Errorf("sign-in after expiry: %d %s", again.Status, again.Raw)
+				}
+				token := again.str("access_token")
+				if token == "" || token == first.str("access_token") {
+					return "", errors.New("sign-in after expiry did not issue a new access token")
+				}
+				info, err := lab.env.userinfo(token, svc.Proof("GET", lab.env.BaseURL+"/oauth2/userinfo", token))
+				if err != nil {
+					return "", err
+				}
+				observed := fmt.Sprintf("200, replay 400 invalid_grant, waited %.0fs, 200 again (new token, userinfo %d)",
+					lifetime+2, info.Status)
+				if info.Status != 200 {
+					return observed, errors.New("new token rejected by userinfo: " + observed)
+				}
+				return observed, nil
+			},
+		},
+		{
 			id: "L2", name: "Logout cuts off a Child App token that was already issued",
 			requirement: "Extension: issued Native SSO tokens die with their SSO session (userinfo, introspection)",
 			expected:    "userinfo 200 before logout, 401 with the same token after logout",

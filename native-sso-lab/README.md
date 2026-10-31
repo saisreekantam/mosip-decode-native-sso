@@ -37,10 +37,11 @@ The harness seeds a fresh mock identity and registers six clients on every run: 
 | C2 | Consent reuse audited | `consent_history` row with `reused_from_client_id` |
 | R1 | 100 concurrent redemptions of one device secret | exactly 1 succeeds |
 | R2 | A captured DPoP proof replayed against userinfo | 401 |
+| S1 | Child signs in, replays at once, waits past `expires_in`, signs in again | 200, `invalid_grant`, then 200 with a new token |
 | L2 | Logout with a child token already issued | userinfo 200 before, 401 after |
 | L1 | Super App ends the SSO session; sibling tries to sign in | `invalid_grant` |
 
-The process exits non-zero if any scenario fails, so it can gate CI.
+S1 waits for the access token to expire (`expires_in`, 120 s by default; set `MOSIP_ESIGNET_JWT_VALIDITY_PERIOD` lower for a faster run). The process exits non-zero if any scenario fails, so it can gate CI.
 
 ## SSO Guardian dashboard
 
@@ -48,7 +49,7 @@ The process exits non-zero if any scenario fails, so it can gate CI.
 
 ## Mutation testing
 
-`python3 mutation/mutate.py --report mutation-report.json` disables each of 16 security checks in the ThunderID and eSignet sources, one at a time. For each, it runs that repository's Native SSO unit tests and expects them to fail; the sources are always restored. 16/16 mutants are caught.
+`python3 mutation/mutate.py --report mutation-report.json` disables each of 17 security checks in the ThunderID and eSignet sources, one at a time. For each, it runs that repository's Native SSO unit tests and expects them to fail; the sources are always restored. 17/17 mutants are caught.
 
 ## Postman
 

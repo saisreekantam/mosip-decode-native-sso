@@ -1,26 +1,26 @@
 {
   "base_url": "http://localhost:8080",
   "clients": {
-    "child_app": "acme-pharmacy-1792785711603927000",
-    "child_app_2": "acme-labs-1792785711676843000",
-    "super_app": "acme-super-app-1792785711783796000"
+    "child_app": "acme-pharmacy-1793443591414620000",
+    "child_app_2": "acme-labs-1793443591444931000",
+    "super_app": "acme-super-app-1793443591586145000"
   },
-  "generated_at": "2026-10-23T20:01:52Z",
+  "generated_at": "2026-10-31T10:48:34Z",
   "results": [
     {
       "id": "H1",
       "name": "Super App signs in with OTP and requests device_sso",
       "requirement": "Tasks 1-6: device_sso scope, token endpoint returns access_token + id_token + device_secret",
       "expected": "200 with device_secret; id_token carries sid and ds_hash bound to the device secret; DPoP-bound access token",
-      "observed": "device_secret is a 5-part JWE (1715 bytes); sid=01a16a5b-02cf-7f75-b93c-7951f147b33a; ds_hash verified; access token bound to key A",
+      "observed": "device_secret is a 5-part JWE (1715 bytes); sid=01a19191-7608-725d-bad0-3123cac97662; ds_hash verified; access token bound to key A",
       "pass": true,
-      "duration_ms": 35,
+      "duration_ms": 99,
       "exchanges": [
         {
           "method": "POST",
           "path": "/oauth2/par",
           "status": 201,
-          "duration_ms": 0
+          "duration_ms": 1
         },
         {
           "method": "POST",
@@ -32,7 +32,7 @@
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 1
+          "duration_ms": 5
         }
       ]
     },
@@ -41,15 +41,15 @@
       "name": "Child App signs in silently via token exchange (no login, no consent screen)",
       "requirement": "Tasks 7-9: id_token + device_secret + DPoP proof via app-to-app channel, token_exchange grant",
       "expected": "200 DPoP access token for the Child App, bound to key A, act.sub = Super App",
-      "observed": "signed in in 8ms; token_type=DPoP; issued_token_type=urn:ietf:params:oauth:token-type:access_token; scope=\"openid profile\"; act.sub=acme-super-app-1792785711783796000",
+      "observed": "signed in in 9ms; token_type=DPoP; issued_token_type=urn:ietf:params:oauth:token-type:access_token; scope=\"openid profile\"; act.sub=acme-super-app-1793443591586145000",
       "pass": true,
-      "duration_ms": 8,
+      "duration_ms": 9,
       "exchanges": [
         {
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 7
+          "duration_ms": 8
         }
       ]
     },
@@ -85,7 +85,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 5
+          "duration_ms": 6
         }
       ]
     },
@@ -96,7 +96,7 @@
       "expected": "400 invalid_grant",
       "observed": "400 invalid_grant: The DPoP proof key does not match the device_secret binding",
       "pass": true,
-      "duration_ms": 7,
+      "duration_ms": 6,
       "exchanges": [
         {
           "method": "POST",
@@ -134,7 +134,7 @@
       "expected": "400 invalid_grant",
       "observed": "400 invalid_grant: Invalid actor_token",
       "pass": true,
-      "duration_ms": 2,
+      "duration_ms": 5,
       "exchanges": [
         {
           "method": "POST",
@@ -142,7 +142,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "Invalid actor_token",
-          "duration_ms": 1
+          "duration_ms": 4
         }
       ]
     },
@@ -153,7 +153,7 @@
       "expected": "400 invalid_grant",
       "observed": "400 invalid_grant: The subject_token is not bound to the device_secret",
       "pass": true,
-      "duration_ms": 30,
+      "duration_ms": 36,
       "exchanges": [
         {
           "method": "POST",
@@ -171,7 +171,7 @@
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 1
+          "duration_ms": 2
         },
         {
           "method": "POST",
@@ -179,7 +179,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The subject_token is not bound to the device_secret",
-          "duration_ms": 5
+          "duration_ms": 6
         }
       ]
     },
@@ -228,7 +228,7 @@
       "expected": "400 invalid_grant",
       "observed": "400 invalid_grant: Invalid actor_token",
       "pass": true,
-      "duration_ms": 6,
+      "duration_ms": 7,
       "exchanges": [
         {
           "method": "POST",
@@ -236,7 +236,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "Invalid actor_token",
-          "duration_ms": 5
+          "duration_ms": 6
         }
       ]
     },
@@ -247,7 +247,7 @@
       "expected": "400 invalid_grant",
       "observed": "400 invalid_grant: Invalid actor_token",
       "pass": true,
-      "duration_ms": 6,
+      "duration_ms": 7,
       "exchanges": [
         {
           "method": "POST",
@@ -255,7 +255,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "Invalid actor_token",
-          "duration_ms": 5
+          "duration_ms": 6
         }
       ]
     },
@@ -275,7 +275,7 @@
       "expected": "400 invalid_scope at the token endpoint",
       "observed": "400 invalid_scope: The client is not allowed to request the device_sso scope",
       "pass": true,
-      "duration_ms": 30,
+      "duration_ms": 27,
       "exchanges": [
         {
           "method": "POST",
@@ -306,13 +306,13 @@
       "expected": "400 interaction_required (child must show its own consent screen)",
       "observed": "400 interaction_required: User consent is required for this client: email",
       "pass": true,
-      "duration_ms": 34,
+      "duration_ms": 37,
       "exchanges": [
         {
           "method": "POST",
           "path": "/v1/mock-identity-system/identity",
           "status": 200,
-          "duration_ms": 2
+          "duration_ms": 3
         },
         {
           "method": "POST",
@@ -324,13 +324,13 @@
           "method": "POST",
           "path": "/oauth2/auth/callback",
           "status": 200,
-          "duration_ms": 1
+          "duration_ms": 2
         },
         {
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 1
+          "duration_ms": 2
         },
         {
           "method": "POST",
@@ -347,9 +347,9 @@
       "name": "Consent reuse is audited in consent_history",
       "requirement": "Diagram: append consent_history row (client_id=child, reused from Super App)",
       "expected": "consent_history row with reused_from_client_id = Super App",
-      "observed": "row: acme-pharmacy-1792785711603927000|acme-super-app-1792785711783796000|[\"name\",\"picture\",\"gender\",\"birthdate\"]",
+      "observed": "row: acme-pharmacy-1793443591414620000|acme-super-app-1793443591586145000|[\"name\",\"picture\",\"gender\",\"birthdate\"]",
       "pass": true,
-      "duration_ms": 93
+      "duration_ms": 46
     },
     {
       "id": "R1",
@@ -358,7 +358,7 @@
       "expected": "exactly 1 success, 99 rejected with invalid_grant",
       "observed": "1 succeeded, 99 rejected (invalid_grant), 0 other",
       "pass": true,
-      "duration_ms": 251,
+      "duration_ms": 241,
       "exchanges": [
         {
           "method": "POST",
@@ -376,21 +376,13 @@
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 1
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 61
+          "duration_ms": 2
         },
         {
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 64
+          "duration_ms": 30
         },
         {
           "method": "POST",
@@ -398,7 +390,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 65
+          "duration_ms": 39
         },
         {
           "method": "POST",
@@ -406,247 +398,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 87
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 103
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 107
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 102
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 110
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 106
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 114
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 116
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 135
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 131
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 136
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 131
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 132
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 140
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 142
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 132
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 134
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 152
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 134
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 149
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 133
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 163
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 163
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 155
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 161
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 151
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 168
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 155
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 163
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 154
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 168
+          "duration_ms": 81
         },
         {
           "method": "POST",
@@ -670,7 +422,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 161
+          "duration_ms": 154
         },
         {
           "method": "POST",
@@ -678,7 +430,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 187
+          "duration_ms": 150
         },
         {
           "method": "POST",
@@ -686,7 +438,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 168
+          "duration_ms": 162
         },
         {
           "method": "POST",
@@ -694,7 +446,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 178
+          "duration_ms": 165
         },
         {
           "method": "POST",
@@ -702,7 +454,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 182
+          "duration_ms": 160
         },
         {
           "method": "POST",
@@ -710,7 +462,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
+          "duration_ms": 166
         },
         {
           "method": "POST",
@@ -718,7 +470,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 187
+          "duration_ms": 154
         },
         {
           "method": "POST",
@@ -726,255 +478,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 184
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 187
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 170
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 188
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 191
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 175
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 198
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 178
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 200
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 201
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 171
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 177
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 179
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 175
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 204
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 176
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 177
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 174
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 171
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 206
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 206
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 174
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 199
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 171
+          "duration_ms": 160
         },
         {
           "method": "POST",
@@ -990,7 +494,39 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
+          "duration_ms": 163
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 166
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 163
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 159
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 163
         },
         {
           "method": "POST",
@@ -1006,7 +542,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 173
+          "duration_ms": 157
         },
         {
           "method": "POST",
@@ -1014,7 +550,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 172
+          "duration_ms": 165
         },
         {
           "method": "POST",
@@ -1022,7 +558,15 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 204
+          "duration_ms": 166
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 164
         },
         {
           "method": "POST",
@@ -1038,47 +582,47 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 166
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 167
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 168
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 166
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 165
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
           "duration_ms": 174
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 178
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 174
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 176
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 214
-        },
-        {
-          "method": "POST",
-          "path": "/oauth2/token",
-          "status": 400,
-          "error": "invalid_grant",
-          "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 178
         },
         {
           "method": "POST",
@@ -1094,6 +638,22 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 172
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 164
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
           "duration_ms": 176
         },
         {
@@ -1102,7 +662,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 178
+          "duration_ms": 174
         },
         {
           "method": "POST",
@@ -1110,7 +670,23 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 179
+          "duration_ms": 170
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 161
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 173
         },
         {
           "method": "POST",
@@ -1126,7 +702,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 179
+          "duration_ms": 170
         },
         {
           "method": "POST",
@@ -1134,7 +710,119 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 179
+          "duration_ms": 172
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 169
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 166
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 180
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 174
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 173
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 177
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 169
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 175
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 178
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 177
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 178
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 172
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 173
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 173
         },
         {
           "method": "POST",
@@ -1158,7 +846,15 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 213
+          "duration_ms": 181
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 175
         },
         {
           "method": "POST",
@@ -1174,7 +870,311 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "The device_secret cannot be redeemed",
-          "duration_ms": 184
+          "duration_ms": 175
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 176
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 182
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 178
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 186
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 188
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 191
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 194
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 192
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 186
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 185
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 180
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 180
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 197
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 181
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 198
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 188
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 186
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 198
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 200
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 185
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 187
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 202
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 189
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 189
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 189
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 200
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 189
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 203
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 192
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 193
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 199
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 206
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 202
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 196
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 203
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 206
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 204
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 196
         }
       ]
     },
@@ -1185,13 +1185,13 @@
       "expected": "first call 200, replayed proof 401",
       "observed": "first 200, replay 401 invalid_token",
       "pass": true,
-      "duration_ms": 11,
+      "duration_ms": 12,
       "exchanges": [
         {
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 6
+          "duration_ms": 7
         },
         {
           "method": "GET",
@@ -1210,13 +1210,13 @@
       ]
     },
     {
-      "id": "L2",
-      "name": "Logout cuts off a Child App token that was already issued",
-      "requirement": "Extension: issued Native SSO tokens die with their SSO session (userinfo, introspection)",
-      "expected": "userinfo 200 before logout, 401 with the same token after logout",
-      "observed": "before logout 200, after logout 401 invalid_token",
+      "id": "S1",
+      "name": "Child App signs in again silently after its access token expires",
+      "requirement": "Extension: one live token per app per SSO session (redemption_policy once_per_token_lifetime)",
+      "expected": "200, replay 400 invalid_grant while the token is live, 200 with a new token after expires_in",
+      "observed": "200, replay 400 invalid_grant, waited 122s, 200 again (new token, userinfo 200)",
       "pass": true,
-      "duration_ms": 37,
+      "duration_ms": 122073,
       "exchanges": [
         {
           "method": "POST",
@@ -1243,6 +1243,61 @@
           "duration_ms": 7
         },
         {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 400,
+          "error": "invalid_grant",
+          "error_description": "The device_secret cannot be redeemed",
+          "duration_ms": 5
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 200,
+          "duration_ms": 26
+        },
+        {
+          "method": "GET",
+          "path": "/oauth2/userinfo",
+          "status": 200,
+          "duration_ms": 4
+        }
+      ]
+    },
+    {
+      "id": "L2",
+      "name": "Logout cuts off a Child App token that was already issued",
+      "requirement": "Extension: issued Native SSO tokens die with their SSO session (userinfo, introspection)",
+      "expected": "userinfo 200 before logout, 401 with the same token after logout",
+      "observed": "before logout 200, after logout 401 invalid_token",
+      "pass": true,
+      "duration_ms": 61,
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/oauth2/par",
+          "status": 201,
+          "duration_ms": 0
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/auth/callback",
+          "status": 200,
+          "duration_ms": 2
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 200,
+          "duration_ms": 2
+        },
+        {
+          "method": "POST",
+          "path": "/oauth2/token",
+          "status": 200,
+          "duration_ms": 10
+        },
+        {
           "method": "GET",
           "path": "/oauth2/userinfo",
           "status": 200,
@@ -1252,7 +1307,7 @@
           "method": "POST",
           "path": "/native-sso/logout",
           "status": 200,
-          "duration_ms": 4
+          "duration_ms": 5
         },
         {
           "method": "GET",
@@ -1271,7 +1326,7 @@
       "expected": "logout 200, then token exchange 400 invalid_grant",
       "observed": "logout ok, then 400 invalid_grant: Invalid actor_token",
       "pass": true,
-      "duration_ms": 31,
+      "duration_ms": 42,
       "exchanges": [
         {
           "method": "POST",
@@ -1289,13 +1344,13 @@
           "method": "POST",
           "path": "/oauth2/token",
           "status": 200,
-          "duration_ms": 1
+          "duration_ms": 2
         },
         {
           "method": "POST",
           "path": "/native-sso/logout",
           "status": 200,
-          "duration_ms": 4
+          "duration_ms": 5
         },
         {
           "method": "POST",
@@ -1303,7 +1358,7 @@
           "status": 400,
           "error": "invalid_grant",
           "error_description": "Invalid actor_token",
-          "duration_ms": 5
+          "duration_ms": 7
         }
       ]
     }

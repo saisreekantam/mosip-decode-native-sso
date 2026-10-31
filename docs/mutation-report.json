@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T19:25:05Z",
+  "generated_at": "2026-10-31T10:51:32Z",
   "results": [
     {
       "id": "M1",
@@ -12,7 +12,7 @@
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches/DPoP_key_is_not_the_device_key"
       ],
-      "seconds": 0.9
+      "seconds": 1.2
     },
     {
       "id": "M2",
@@ -25,7 +25,7 @@
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches/ds_hash_of_another_device_secret"
       ],
-      "seconds": 0.9
+      "seconds": 1.2
     },
     {
       "id": "M3",
@@ -38,7 +38,7 @@
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches",
         "TestNativeSSOTestSuite/TestRejectsBindingMismatches/ID_token_of_another_session"
       ],
-      "seconds": 1.0
+      "seconds": 1.2
     },
     {
       "id": "M4",
@@ -50,7 +50,7 @@
         "TestNativeSSOTestSuite",
         "TestNativeSSOTestSuite/TestRejectsWhenOriginalClientLostDeviceSSO"
       ],
-      "seconds": 0.9
+      "seconds": 1.1
     },
     {
       "id": "M5",
@@ -63,7 +63,7 @@
         "TestNativeSSOTestSuite/TestEnforcesScopeRules",
         "TestNativeSSOTestSuite/TestEnforcesScopeRules/scope_not_granted_to_the_original_client"
       ],
-      "seconds": 0.9
+      "seconds": 1.1
     },
     {
       "id": "M6",
@@ -76,7 +76,7 @@
         "TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape",
         "TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape/device_sso_requested"
       ],
-      "seconds": 0.9
+      "seconds": 1.1
     },
     {
       "id": "M7",
@@ -89,7 +89,7 @@
         "TestNativeSSOTestSuite/TestChildAttributesFilterPlainAttributes",
         "TestNativeSSOTestSuite/TestChildAttributesRequireInteractionWhenUnavailable"
       ],
-      "seconds": 1.5
+      "seconds": 1.1
     },
     {
       "id": "M8",
@@ -102,7 +102,7 @@
         "TestNativeSSOTestSuite/TestSessionEnforcement",
         "TestNativeSSOTestSuite/TestSessionEnforcement/ended_session_revokes_its_tokens"
       ],
-      "seconds": 0.9
+      "seconds": 1.2
     },
     {
       "id": "M9",
@@ -115,7 +115,7 @@
         "TestNativeSSOTestSuite/TestValidateDeviceSSORequest",
         "TestNativeSSOTestSuite/TestValidateDeviceSSORequest/client_not_registered_for_device_sso"
       ],
-      "seconds": 0.9
+      "seconds": 1.1
     },
     {
       "id": "M10",
@@ -128,7 +128,7 @@
         "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList",
         "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/foreign"
       ],
-      "seconds": 1.4
+      "seconds": 1.1
     },
     {
       "id": "M11",
@@ -141,7 +141,7 @@
         "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList",
         "TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/unlisted"
       ],
-      "seconds": 0.7
+      "seconds": 1.1
     },
     {
       "id": "M12",
@@ -151,9 +151,10 @@
       "status": "killed",
       "killed_by": [
         "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeAllowsSignInAgainAfterExpiry",
         "TestDeviceSecretProviderTestSuite/TestRedeemOncePerClient"
       ],
-      "seconds": 0.7
+      "seconds": 1.1
     },
     {
       "id": "M13",
@@ -166,7 +167,7 @@
         "TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets",
         "TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets/expired"
       ],
-      "seconds": 0.7
+      "seconds": 1.0
     },
     {
       "id": "M14",
@@ -178,7 +179,7 @@
         "TestDeviceSecretProviderTestSuite",
         "TestDeviceSecretProviderTestSuite/TestValidateRejectsSecretsOfAnotherIssuer"
       ],
-      "seconds": 0.8
+      "seconds": 1.1
     },
     {
       "id": "M15",
@@ -191,7 +192,7 @@
         "TestDeviceSecretProviderTestSuite/TestEndSessionSignsOutTheWholeFamily",
         "TestDeviceSecretProviderTestSuite/TestNewSessionSupersedesOldDeviceSecret"
       ],
-      "seconds": 1.4
+      "seconds": 1.0
     },
     {
       "id": "M16",
@@ -204,7 +205,20 @@
         "TestNativeSSOConsentProviderTestSuite/TestRecordRefusesUncoveredRequests",
         "TestNativeSSOConsentProviderTestSuite/TestResolve"
       ],
-      "seconds": 0.8
+      "seconds": 1.1
+    },
+    {
+      "id": "M17",
+      "property": "A redemption blocks the app's next one for the access token's lifetime",
+      "repo": "esignet",
+      "file": "internal/engine/device_secret_provider.go",
+      "status": "killed",
+      "killed_by": [
+        "TestDeviceSecretProviderTestSuite",
+        "TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeAllowsSignInAgainAfterExpiry",
+        "TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeNeverOutlivesTheDeviceSecret"
+      ],
+      "seconds": 1.1
     }
   ]
 }

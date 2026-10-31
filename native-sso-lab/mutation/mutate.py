@@ -75,6 +75,9 @@ MUTANTS = [
     ("M16", "A child only receives claims the user accepted", ESIGNET, CONSENT,
      "if slices.Contains(client.Claims, claim) && slices.Contains(record.AcceptedClaims, claim) {",
      "if slices.Contains(client.Claims, claim) {"),
+    ("M17", "A redemption blocks the app's next one for the access token's lifetime", ESIGNET, DSP,
+     "\t\treturn tokenTTL, true",
+     "\t\treturn 1, true"),
 ]
 
 

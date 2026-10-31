@@ -63,7 +63,7 @@ jobs:
             native-sso-android/child-app/build/outputs/apk/rogue/child-app-rogue.apk
 
   e2e:
-    name: Live end-to-end (20 scenarios + Postman)
+    name: Live end-to-end (21 scenarios + Postman)
     runs-on: ubuntu-latest
     needs: unit-tests
     steps:
@@ -96,7 +96,7 @@ jobs:
           path: native-sso-lab/results.json
 
   mutation:
-    name: Mutation testing (16 security checks)
+    name: Mutation testing (17 security checks)
     runs-on: ubuntu-latest
     needs: unit-tests
     steps:

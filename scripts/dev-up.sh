@@ -11,7 +11,12 @@ cd "$ROOT"
 [ -d thunderid/backend ] && [ -d esignet/esignet-service ] || { echo "run scripts/setup.sh first"; exit 1; }
 
 echo "== Postgres + mock identity system"
-docker compose -f esignet/docker-compose/dependent-docker-compose.yaml up -d
+DEPS=esignet/docker-compose/dependent-docker-compose.yaml
+docker compose -f "$DEPS" up -d
+for _ in $(seq 1 120); do
+  docker compose -f "$DEPS" exec -T database pg_isready -U postgres >/dev/null 2>&1 && break; sleep 1
+done
+docker compose -f "$DEPS" exec -T database pg_isready -U postgres >/dev/null || { echo "Postgres did not become ready"; exit 1; }
 echo "== eSignet login UI (oidc-ui) on :3000"
 docker compose -f native-sso-lab/dev/docker-compose.oidc-ui.yaml up -d
 
@@ -29,6 +34,14 @@ if ! curl -sf localhost:8080/health >/dev/null; then
 fi
 curl -sf localhost:8080/health >/dev/null && echo "eSignet is up: http://localhost:8080/.well-known/openid-configuration" \
   || { echo "eSignet did not start, see /tmp/esignet-run.log"; exit 1; }
+
+echo "== waiting for the mock identity system on :8082"
+for _ in $(seq 1 180); do
+  # Any HTTP answer means the Spring app is serving; connection refused means it is still starting.
+  [ "$(curl -s -o /dev/null -w '%{http_code}' localhost:8082/v1/mock-identity-system/identity)" != "000" ] && break; sleep 1
+done
+[ "$(curl -s -o /dev/null -w '%{http_code}' localhost:8082/v1/mock-identity-system/identity)" != "000" ] \
+  && echo "mock identity system is up" || { echo "mock identity system did not start"; exit 1; }
 
 if command -v adb >/dev/null && adb get-state >/dev/null 2>&1; then
   for p in 8080 3000 8082; do adb reverse tcp:$p tcp:$p >/dev/null; done

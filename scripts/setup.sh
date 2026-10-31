@@ -7,6 +7,6 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 THUNDERID_REPO=${THUNDERID_REPO:-https://github.com/saisreekantam/thunderid.git}
 ESIGNET_REPO=${ESIGNET_REPO:-https://github.com/saisreekantam/esignet.git}
-[ -d thunderid ] || git clone --branch feature/native-sso "$THUNDERID_REPO" thunderid
-[ -d esignet ] || git clone --branch feature/native-sso "$ESIGNET_REPO" esignet
+[ -d thunderid ] || git clone --depth 1 --branch feature/native-sso "$THUNDERID_REPO" thunderid
+[ -d esignet ] || git clone --depth 1 --branch feature/native-sso "$ESIGNET_REPO" esignet
 echo "Done. Next: scripts/dev-up.sh"

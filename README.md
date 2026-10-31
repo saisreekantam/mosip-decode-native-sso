@@ -1,5 +1,7 @@
 # Native SSO for eSignet Go: sign in once, use every app of the family
 
+[![CI](https://github.com/saisreekantam/mosip-decode-native-sso/actions/workflows/ci.yml/badge.svg)](https://github.com/saisreekantam/mosip-decode-native-sso/actions/workflows/ci.yml)
+
 **MOSIP Decode 2026, problem statement 03: Enable Native SSO in eSignet Go for Mobile Apps.**
 
 **Team TechTitans:** Sai Venkat, Revanth, Aditya, Ashok

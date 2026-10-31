@@ -76,7 +76,7 @@
 </main>
 <script>
 const groups = [
-  ["H", "Happy path"], ["A", "Attacks"], ["C", "Consent"], ["R", "Races and replays"], ["L", "Logout and revocation"],
+  ["H", "Happy path"], ["A", "Attacks"], ["C", "Consent"], ["R", "Races and replays"], ["S", "Sessions and expiry"], ["L", "Logout and revocation"],
 ];
 const results = {};
 let busy = false;
@@ -115,6 +115,7 @@ async function load() {
 function render(r) {
   results[r.id] = r;
   const pill = document.getElementById("pill-" + r.id);
+  if (!pill) return; // a scenario whose ID prefix has no group: count it, but there is no card to fill
   pill.className = "pill " + (r.pass ? "pass" : "fail");
   pill.textContent = r.pass ? "PASS" : "FAIL";
   const box = document.getElementById("res-" + r.id);

@@ -8,6 +8,8 @@
         android:protectionLevel="signature" />
 
     <application
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
         android:label="Acme Super App"
         android:networkSecurityConfig="@xml/native_sso_network_security"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">

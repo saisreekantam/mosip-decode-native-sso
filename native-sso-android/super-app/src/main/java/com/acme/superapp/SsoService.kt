@@ -43,14 +43,24 @@ class SsoService : Service() {
             reply.putString(SsoProtocol.KEY_ERROR, "caller is not signed by the vendor")
         } else {
             val session = SuperAppSession.get(this)
+            val label = runCatching {
+                packageManager.getApplicationLabel(packageManager.getApplicationInfo(caller, 0)).toString()
+            }.getOrDefault(caller)
             try {
-                when (msg.what) {
-                    SsoProtocol.MSG_ENROLL -> {
+                when {
+                    msg.what != SsoProtocol.MSG_ENROLL && session.isSignedOut(caller) ->
+                        // Re-joining takes a deliberate "continue with your Acme account" (MSG_ENROLL).
+                        reply.putString(SsoProtocol.KEY_ERROR, SsoProtocol.ERROR_APP_SIGNED_OUT)
+                    msg.what == SsoProtocol.MSG_ENROLL -> {
                         val sibling = msg.data.getString(SsoProtocol.KEY_CLIENT_ID).orEmpty()
-                        if (!session.enroll(sibling)) reply.putString(SsoProtocol.KEY_ERROR, "enrollment failed")
+                        if (session.enroll(sibling)) {
+                            session.recordUse(caller, label, sibling, connect = true)
+                        } else {
+                            reply.putString(SsoProtocol.KEY_ERROR, "enrollment failed")
+                        }
                         reply.putString(SsoProtocol.KEY_SUPER_CLIENT_ID, session.clientId)
                     }
-                    SsoProtocol.MSG_GET_BUNDLE -> {
+                    msg.what == SsoProtocol.MSG_GET_BUNDLE -> {
                         val idToken = session.idToken
                         val ds = session.deviceSecret
                         if (idToken == null || ds == null) {
@@ -59,9 +69,10 @@ class SsoService : Service() {
                             reply.putString(SsoProtocol.KEY_ID_TOKEN, idToken)
                             reply.putString(SsoProtocol.KEY_DEVICE_SECRET, ds)
                             reply.putString(SsoProtocol.KEY_SUPER_CLIENT_ID, session.clientId)
+                            session.recordUse(caller, label)
                         }
                     }
-                    SsoProtocol.MSG_SIGN_DPOP -> {
+                    msg.what == SsoProtocol.MSG_SIGN_DPOP -> {
                         val data = msg.data
                         reply.putString(SsoProtocol.KEY_PROOF, session.deviceKey.dpopProof(
                             data.getString(SsoProtocol.KEY_HTM).orEmpty(),
@@ -69,6 +80,7 @@ class SsoService : Service() {
                             data.getString(SsoProtocol.KEY_ACCESS_TOKEN),
                         ))
                         reply.putString(SsoProtocol.KEY_JKT, session.deviceKey.thumbprint)
+                        session.recordUse(caller, label)
                     }
                     else -> reply.putString(SsoProtocol.KEY_ERROR, "unknown request ${msg.what}")
                 }

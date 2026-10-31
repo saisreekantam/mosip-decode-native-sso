@@ -11,8 +11,8 @@ android {
         applicationId = "com.acme.pharmacy"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
     signingConfigs {
         // A certificate the vendor does not own: the "rogue" build demonstrates that Android refuses

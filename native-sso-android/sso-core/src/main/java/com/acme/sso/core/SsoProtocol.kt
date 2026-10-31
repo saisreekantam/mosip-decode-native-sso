@@ -24,4 +24,7 @@ object SsoProtocol {
     const val KEY_JKT = "jkt"
     const val KEY_ERROR = "error"
     const val KEY_SUPER_CLIENT_ID = "super_client_id"
+
+    /** The user signed this app out on the Super App's Connected apps screen. */
+    const val ERROR_APP_SIGNED_OUT = "app_signed_out"
 }

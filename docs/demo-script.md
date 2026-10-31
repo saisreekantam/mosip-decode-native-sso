@@ -1,5 +1,7 @@
 # Demo video script (about 4 minutes)
 
+> **Recorded with v1.0.0.** The counts below (20/20, 16/16) and the screens are those of v1.0.0. v1.1.0 has 21/21 scenarios and 17/17 mutants and refreshed screens with the same buttons; see the README section "Since the demo video".
+
 Record the emulator screen with `adb shell screenrecord /sdcard/demo.mp4` (3 minutes maximum per file; record each scene separately), and the dashboard with any screen recorder. Before recording, run `scripts/dev-up.sh`, install both apps, and do one Super App login so its client is registered.
 
 | Time | Screen | Say |

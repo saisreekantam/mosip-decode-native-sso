@@ -42,10 +42,10 @@ Source code:
   Submission repository (apps, test lab, docs): https://github.com/saisreekantam/mosip-decode-native-sso
   ThunderID fork, branch feature/native-sso:     https://github.com/saisreekantam/thunderid/tree/feature/native-sso
   eSignet fork, branch feature/native-sso:       https://github.com/saisreekantam/esignet/tree/feature/native-sso
-Demo video:      <Drive URL>
+Demo video:      <Drive URL>  (recorded with release v1.0.0; the current release is v1.1.0, see the README "Since the demo video")
 Pitch deck:      <Drive URL>
 College IDs:     <Drive URL>
-Docs:            https://github.com/saisreekantam/mosip-decode-native-sso/blob/main/README.md (installation), docs/design.md (design + API), docs/testing.md (tests)
+Docs:            https://github.com/saisreekantam/mosip-decode-native-sso/blob/main/README.md (installation), docs/design.md (design + API), docs/conformance.md (spec conformance + threat model), docs/testing.md (tests)
 ```
 
 ## Pitch deck outline (10 slides)
@@ -57,6 +57,6 @@ Docs:            https://github.com/saisreekantam/mosip-decode-native-sso/blob/m
 5. **What we built.** The ThunderID engine (protocol), eSignet (device secret, sessions, consent, logout), two Android apps, a Postman collection; the 10 tasks plus the bonus done.
 6. **Security by design.** Signed-then-encrypted device secret, DPoP on both legs, vendor allow-list (same `rp_id`), atomic single-use redemption, consent reuse only within what the user granted, an audit trail.
 7. **Beyond the spec.** Logout cuts off already-issued tokens; per-app userinfo (the leak we found in our first version and fixed); a re-consent fallback.
-8. **Proof.** The SSO Guardian dashboard; 20/20 live scenarios, 16/16 mutants, 100 tests, ~3 M fuzz inputs, 18/18 Postman steps, on-device screenshots.
+8. **Proof.** The SSO Guardian dashboard; 21/21 live scenarios, two eSignet instances sharing Redis (scales horizontally), 17/17 mutants, 112 tests, ~3 M fuzz inputs, 18/18 Postman steps, on-device screenshots.
 9. **Impact and extension.** Works for any MOSIP deployment's app families (health, social protection, banking); config-only enablement per client; the next steps are iOS (Secure Enclave and an app group), Play Integrity attestation of key A, and refresh tokens for sibling apps.
 10. **Thank you.** Links to repos, the video and the docs.

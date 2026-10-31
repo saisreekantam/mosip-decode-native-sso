@@ -19,8 +19,8 @@ No real credentials or personal data are used anywhere.
 
 | ID | Scenario | Requirement | Expected | Observed | Result |
 |---|---|---|---|---|---|
-| H1 | Super App signs in with OTP and requests device_sso | Tasks 1-6: device_sso scope, token endpoint returns access_token + id_token + device_secret | 200 with device_secret; id_token carries sid and ds_hash bound to the device secret; DPoP-bound access token | device_secret is a 5-part JWE (1715 bytes); sid=01a16a5b-02cf-7f75-b93c-7951f147b33a; ds_hash verified; access token bound to key A | PASS |
-| H2 | Child App signs in silently via token exchange (no login, no consent screen) | Tasks 7-9: id_token + device_secret + DPoP proof via app-to-app channel, token_exchange grant | 200 DPoP access token for the Child App, bound to key A, act.sub = Super App | signed in in 8ms; token_type=DPoP; issued_token_type=urn:ietf:params:oauth:token-type:access_token; scope="openid profile"; act.sub=acme-sup… | PASS |
+| H1 | Super App signs in with OTP and requests device_sso | Tasks 1-6: device_sso scope, token endpoint returns access_token + id_token + device_secret | 200 with device_secret; id_token carries sid and ds_hash bound to the device secret; DPoP-bound access token | device_secret is a 5-part JWE (1715 bytes); sid=01a19191-7608-725d-bad0-3123cac97662; ds_hash verified; access token bound to key A | PASS |
+| H2 | Child App signs in silently via token exchange (no login, no consent screen) | Tasks 7-9: id_token + device_secret + DPoP proof via app-to-app channel, token_exchange grant | 200 DPoP access token for the Child App, bound to key A, act.sub = Super App | signed in in 9ms; token_type=DPoP; issued_token_type=urn:ietf:params:oauth:token-type:access_token; scope="openid profile"; act.sub=acme-super-app-1793443591586145000 | PASS |
 | H3 | Child App calls userinfo with a DPoP proof borrowed from the Super App | End-to-end: child receives the user's consented claims | 200 addressed to the Child App, with only the profile claims the user consented to (no email) | userinfo for Asha Devi: claims [aud birthdate exp gender iat iss jti name nbf picture sub] | PASS |
 | A1 | Replay: the same app redeems the same device secret again | Diagram: mark device_secret jti as used | 400 invalid_grant | 400 invalid_grant: The device_secret cannot be redeemed | PASS |
 | A2 | Stolen id_token + device_secret replayed from another device (attacker's own DPoP key) | Task 9.iii.4: cnf.jkt of the device secret must match the DPoP proof key | 400 invalid_grant | 400 invalid_grant: The DPoP proof key does not match the device_secret binding | PASS |
@@ -34,11 +34,28 @@ No real credentials or personal data are used anywhere.
 | A10 | Rogue app signed with a different certificate binds the Super App's SSO service | Diagram: bindService is signature-permission protected | bind refused by the OS (key A and the bundle never leave the Super App) | SecurityException: caller does not hold the signature permission | PASS |
 | A11 | Client not registered for device_sso asks for it at login | Task 2: allowed_authorization_scopes must include device_sso | 400 invalid_scope at the token endpoint | 400 invalid_scope: The client is not allowed to request the device_sso scope | PASS |
 | C1 | Consent not covered: user declined email at Super App login, child asks for email | Consent reuse (NOCAPTURE) only when the child's claims are a subset of consented claims | 400 interaction_required (child must show its own consent screen) | 400 interaction_required: User consent is required for this client: email | PASS |
-| C2 | Consent reuse is audited in consent_history | Diagram: append consent_history row (client_id=child, reused from Super App) | consent_history row with reused_from_client_id = Super App | row: acme-pharmacy-1792785711603927000\|acme-super-app-1792785711783796000\|["name","picture","gender","birthdate"] | PASS |
+| C2 | Consent reuse is audited in consent_history | Diagram: append consent_history row (client_id=child, reused from Super App) | consent_history row with reused_from_client_id = Super App | row: acme-pharmacy-1793443591414620000\|acme-super-app-1793443591586145000\|["name","picture","gender","birthdate"] | PASS |
 | R1 | Race: 100 concurrent redemptions of one device secret by the same app | Single-use redemption is atomic (no check-then-set window) | exactly 1 success, 99 rejected with invalid_grant | 1 succeeded, 99 rejected (invalid_grant), 0 other | PASS |
 | R2 | Replay of a captured DPoP proof against userinfo | RFC 9449: each DPoP proof jti is single-use | first call 200, replayed proof 401 | first 200, replay 401 invalid_token | PASS |
+| S1 | Child App signs in again silently after its access token expires | Extension: one live token per app per SSO session (redemption_policy once_per_token_lifetime) | 200, replay 400 invalid_grant while the token is live, 200 with a new token after expires_in | 200, replay 400 invalid_grant, waited 122s, 200 again (new token, userinfo 200) | PASS |
 | L2 | Logout cuts off a Child App token that was already issued | Extension: issued Native SSO tokens die with their SSO session (userinfo, introspection) | userinfo 200 before logout, 401 with the same token after logout | before logout 200, after logout 401 invalid_token | PASS |
 | L1 | Global logout: Super App ends the SSO session, sibling apps can no longer sign in | Extension: session-level revocation (sid liveness, out of scope in the diagram) | logout 200, then token exchange 400 invalid_grant | logout ok, then 400 invalid_grant: Invalid actor_token | PASS |
+
+## Scales horizontally
+
+`scripts/scale-test.sh` runs two eSignet instances (:8181, :8182) built from the same source, both with `MOSIP_ESIGNET_CACHE_TYPE=redis` on one Redis, behind a round-robin nginx on :8080. It then runs all 21 scenarios through the load balancer. Consecutive requests of one flow land on different instances, so SSO sessions, redemption locks, DPoP `jti` replay checks, logout and the attribute cache must all live in the shared store. `scripts/scale-test.sh down` stops the scaled stack; `scripts/dev-up.sh` brings back the single instance.
+
+| Check | Result |
+|---|---|
+| All scenarios through the load balancer | 21/21 pass ([report](scale-results.json)) |
+| Traffic split | 95 / 95 requests; 63 / 62 token-endpoint calls (:8181 / :8182) |
+| R1: 100 concurrent redemptions spread across both instances | 1 succeeded, 99 rejected with `invalid_grant`. The atomic `PutIfNotExists` lock holds across instances. |
+| A1, S1: replay refused while the token is live, re-sign-in after expiry | pass. The lock TTL is enforced by Redis. |
+| R2: DPoP proof replay | first 200, replay 401. The `jti` cache is shared. |
+| L1, L2: logout on one instance | the other instance refuses the exchange and cuts off the issued token |
+| Shared state | 42 Redis keys after the run |
+
+With more than one instance, Redis (or another shared runtime store) is required. With the in-memory store, a replay sent to the other instance would not see the first instance's lock.
 
 ## Mutation testing
 
@@ -46,30 +63,32 @@ Each mutant disables one security check, runs the unit tests of its repository, 
 
 | ID | Security property | Result | Caught by |
 |---|---|---|---|
-| M1 | DPoP key must equal the device secret's cnf.jkt | killed | `TestNativeSSOTestSuite/TestRejectsBindingMismatches/DPoP_key_is_not_the_device_key` |
-| M2 | ID token must carry the device secret's ds_hash | killed | `TestNativeSSOTestSuite/TestRejectsBindingMismatches/ds_hash_of_another_device_secret` |
-| M3 | ID token sid/sub/aud must match the device secret session | killed | `TestNativeSSOTestSuite/TestRejectsBindingMismatches/ID_token_of_another_session` |
-| M4 | Original client must still be registered for device_sso | killed | `TestNativeSSOTestSuite/TestRejectsWhenOriginalClientLostDeviceSSO` |
-| M5 | Requested scopes must be a subset of the original grant | killed | `TestNativeSSOTestSuite/TestEnforcesScopeRules/scope_not_granted_to_the_original_client` |
-| M6 | device_sso cannot be requested on token exchange | killed | `TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape/device_sso_requested` |
-| M7 | A redemption must be claimed before a token is issued | killed | `TestNativeSSOTestSuite/TestChildAttributesRequireInteractionWhenUnavailable` |
-| M8 | Tokens die with their SSO session | killed | `TestNativeSSOTestSuite/TestSessionEnforcement/ended_session_revokes_its_tokens` |
-| M9 | Only clients registered for device_sso can request it | killed | `TestNativeSSOTestSuite/TestValidateDeviceSSORequest/client_not_registered_for_device_sso` |
-| M10 | Apps of another vendor (rp_id) cannot redeem | killed | `TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/foreign` |
-| M11 | Only allow-listed apps can redeem | killed | `TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/unlisted` |
-| M12 | Each app redeems a device secret at most once | killed | `TestDeviceSecretProviderTestSuite/TestRedeemOncePerClient` |
-| M13 | Expired device secrets are rejected | killed | `TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets/expired` |
-| M14 | Only device secrets (token_use) are accepted | killed | `TestDeviceSecretProviderTestSuite/TestValidateRejectsSecretsOfAnotherIssuer` |
-| M15 | A device secret of an ended or replaced session is rejected | killed | `TestDeviceSecretProviderTestSuite/TestNewSessionSupersedesOldDeviceSecret` |
-| M16 | A child only receives claims the user accepted | killed | `TestNativeSSOConsentProviderTestSuite/TestResolve` |
+| M1 | DPoP key must equal the device secret's cnf.jkt | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches/DPoP_key_is_not_the_device_key']` |
+| M2 | ID token must carry the device secret's ds_hash | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches/ds_hash_of_another_device_secret']` |
+| M3 | ID token sid/sub/aud must match the device secret session | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches', 'TestNativeSSOTestSuite/TestRejectsBindingMismatches/ID_token_of_another_session']` |
+| M4 | Original client must still be registered for device_sso | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestRejectsWhenOriginalClientLostDeviceSSO']` |
+| M5 | Requested scopes must be a subset of the original grant | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestEnforcesScopeRules', 'TestNativeSSOTestSuite/TestEnforcesScopeRules/scope_not_granted_to_the_original_client']` |
+| M6 | device_sso cannot be requested on token exchange | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape', 'TestNativeSSOTestSuite/TestValidateGrantNativeSSOShape/device_sso_requested']` |
+| M7 | A redemption must be claimed before a token is issued | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestChildAttributesFilterPlainAttributes', 'TestNativeSSOTestSuite/TestChildAttributesRequireInteractionWhenUnavailable']` |
+| M8 | Tokens die with their SSO session | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestSessionEnforcement', 'TestNativeSSOTestSuite/TestSessionEnforcement/ended_session_revokes_its_tokens']` |
+| M9 | Only clients registered for device_sso can request it | killed | `['TestNativeSSOTestSuite', 'TestNativeSSOTestSuite/TestValidateDeviceSSORequest', 'TestNativeSSOTestSuite/TestValidateDeviceSSORequest/client_not_registered_for_device_sso']` |
+| M10 | Apps of another vendor (rp_id) cannot redeem | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestRedemptionAllowList', 'TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/foreign']` |
+| M11 | Only allow-listed apps can redeem | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestRedemptionAllowList', 'TestDeviceSecretProviderTestSuite/TestRedemptionAllowList/unlisted']` |
+| M12 | Each app redeems a device secret at most once | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeAllowsSignInAgainAfterExpiry', 'TestDeviceSecretProviderTestSuite/TestRedeemOncePerClient']` |
+| M13 | Expired device secrets are rejected | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets', 'TestDeviceSecretProviderTestSuite/TestValidateRejectsForgedOrExpiredSecrets/expired']` |
+| M14 | Only device secrets (token_use) are accepted | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestValidateRejectsSecretsOfAnotherIssuer']` |
+| M15 | A device secret of an ended or replaced session is rejected | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestEndSessionSignsOutTheWholeFamily', 'TestDeviceSecretProviderTestSuite/TestNewSessionSupersedesOldDeviceSecret']` |
+| M16 | A child only receives claims the user accepted | killed | `['TestNativeSSOConsentProviderTestSuite', 'TestNativeSSOConsentProviderTestSuite/TestRecordRefusesUncoveredRequests', 'TestNativeSSOConsentProviderTestSuite/TestResolve']` |
+| M17 | A redemption blocks the app's next one for the access token's lifetime | killed | `['TestDeviceSecretProviderTestSuite', 'TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeAllowsSignInAgainAfterExpiry', 'TestDeviceSecretProviderTestSuite/TestOncePerTokenLifetimeNeverOutlivesTheDeviceSecret']` |
 
 ## Unit tests and fuzzing
 
 | Suite | Location | Cases |
 |---|---|---|
 | ThunderID Native SSO | `thunderid/backend/internal/oauth/oauth2/granthandlers/native_sso_test.go` | 57 |
-| eSignet device secret provider | `esignet/esignet-service/internal/engine/device_secret_provider_test.go` | part of 43 |
-| eSignet consent reuse | `esignet/esignet-service/internal/engine/native_sso_consent_provider_test.go` | part of 43 |
+| eSignet device secret provider | `esignet/esignet-service/internal/engine/device_secret_provider_test.go` | part of 48 |
+| eSignet consent reuse | `esignet/esignet-service/internal/engine/native_sso_consent_provider_test.go` | part of 48 |
+| eSignet redemption policy config | `esignet/esignet-service/internal/config/app_test.go` (`TestApplyNativeSSODefaultsRedemptionPolicy`) | 7 |
 | Android JOSE helpers | `native-sso-android/sso-core/src/test/.../JoseTest.kt` | 5 (DER→JOSE round trip, RFC 7638 thumbprints, fixed-width coordinates) |
 | Fuzz: scope invariants | `FuzzNativeSSOScopes` | ~1.2 M inputs |
 | Fuzz: device secret forgery | `FuzzValidateDeviceSecret` | ~2 M inputs |

@@ -1,5 +1,7 @@
 # Demo video: script and commands (2:00–2:30)
 
+> **Recorded with v1.0.0.** This script, its scenario counts (20/20, 16/16) and the screens it describes match the [v1.0.0 release](https://github.com/saisreekantam/mosip-decode-native-sso/releases/tag/v1.0.0). [v1.1.0](https://github.com/saisreekantam/mosip-decode-native-sso/releases/tag/v1.1.0) keeps every button and flow but adds re-sign-in after token expiry, plain-language screens, Connected apps, a consent preview and a new visual identity. The test lab now has 21 scenarios and 17 mutants. See the README section "Since the demo video".
+
 About 300 words of narration, which fits 2:00–2:30 at a normal pace. Each scene lists what to show, the command to run (if any), and what to say.
 
 ---

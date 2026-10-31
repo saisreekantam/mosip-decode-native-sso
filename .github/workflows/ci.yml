@@ -50,7 +50,7 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: gradle
-      - uses: android-actions/setup-android@v3
+      # ubuntu-latest ships the Android SDK (ANDROID_HOME); Gradle fetches any missing platform.
       - name: Unit tests and APKs
         working-directory: native-sso-android
         run: ./gradlew --no-daemon :sso-core:testDebugUnitTest :super-app:assembleDebug :child-app:assembleDebug :child-app:assembleRogue

@@ -88,7 +88,7 @@ scripts/setup.sh          # clone the two forks next to this repo (set THUNDERID
 scripts/dev-up.sh         # Postgres + mock identity, eSignet login UI (:3000), eSignet (:8080)
 ```
 
-**Android apps:**
+**Android apps:** prebuilt APKs are attached to the [v1.0.0 release](https://github.com/saisreekantam/mosip-decode-native-sso/releases/tag/v1.0.0) (`adb install` both, then the `adb reverse` line below). To build them yourself:
 
 ```bash
 cd native-sso-android

@@ -8,3 +8,4 @@ node_modules/
 /native-sso-android/local.properties
 /native-sso-android/.gradle/
 /native-sso-android/**/build/
+/native-sso-lab/results-scale.json

@@ -1,6 +1,6 @@
 # Native SSO Android apps
 
-Two apps from the same vendor ("Acme Health") that show OpenID Connect Native SSO against eSignet Go.
+Two apps from the same vendor ("Acme Health") that show OpenID Connect Native SSO against eSignet Go. Both apps are available in English and Hindi (follows the phone language).
 
 | Module | Package | Role |
 |---|---|---|

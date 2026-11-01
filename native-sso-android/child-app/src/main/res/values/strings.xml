@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="checking_with_esignet">Checking with eSignet…</string>
+    <string name="trace_trusted">Why this sign-in was trusted</string>
+    <string name="trace_refused">Why this sign-in was refused</string>
+
+    <!-- Signed-in card -->
+    <string name="welcome">Welcome, %1$s</string>
+    <string name="default_user_name">user</string>
+    <string name="signed_in_acme">You\'re signed in with your Acme account</string>
+    <string name="signed_in_pharmacy">You\'re signed in to Pharmacy</string>
+    <string name="what_pharmacy_sees">What Pharmacy can see</string>
+    <string name="refresh_profile">Refresh profile</string>
+    <string name="sign_out_here">Sign out here</string>
+
+    <!-- Sign-in choice -->
+    <string name="sign_in_with_acme">Sign in with your Acme account</string>
+    <string name="pharmacy_will_see">Pharmacy will see</string>
+    <string name="no_password_hint">No password or OTP: you are already signed in to Acme Super App on this phone.</string>
+    <string name="continue_with_acme">Continue with your Acme account</string>
+
+    <!-- Consent card -->
+    <string name="consent_needed">Your consent is needed</string>
+    <string name="these_details">these details</string>
+    <string name="consent_body">Pharmacy asked for your %1$s. You did not share %2$s when you signed in to Acme Super App, so Pharmacy has to ask you itself.</string>
+    <string name="consent_it">it</string>
+    <string name="consent_these">these</string>
+    <string name="consent_missing">Missing: %1$s</string>
+    <string name="review_and_consent">Review and consent</string>
+
+    <!-- Technical details -->
+    <string name="tech_client">Client</string>
+    <string name="tech_access_token">Access token</string>
+    <string name="tech_mode_sso">Native SSO (bound to the Super App\'s key A)</string>
+    <string name="tech_mode_own">own login (Pharmacy\'s key)</string>
+    <string name="tech_userinfo">Userinfo claims</string>
+</resources>

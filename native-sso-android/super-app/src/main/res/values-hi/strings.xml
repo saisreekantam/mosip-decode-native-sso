@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Top bars -->
+    <string name="brand_title">Acme Health</string>
+    <string name="brand_subtitle">सुपर ऐप</string>
+    <string name="connected_apps_title">जुड़े हुए ऐप</string>
+
+    <!-- Progress labels (also shown in the activity log) -->
+    <string name="task_registering">eSignet के साथ पंजीकरण हो रहा है</string>
+    <string name="task_completing_login">eSignet लॉगिन पूरा हो रहा है</string>
+    <string name="task_logging_out">सभी Acme ऐप से लॉग आउट हो रहा है</string>
+    <string name="task_creating_demo">डेमो पहचान बनाई जा रही है</string>
+    <string name="task_starting_login">eSignet लॉगिन शुरू हो रहा है (PAR + DPoP)</string>
+    <string name="task_signing_out_app">%1$s को साइन आउट किया जा रहा है</string>
+    <string name="busy_suffix">%1$s…</string>
+    <string name="task_failed">%1$s विफल रहा। %2$s</string>
+    <string name="opened_login_ui">eSignet लॉगिन स्क्रीन खोली गई</string>
+    <string name="demo_using_existing">मौजूदा UIN %1$s का उपयोग (OTP 111111)</string>
+    <string name="demo_created">UIN %1$s बनाया गया (OTP 111111)</string>
+
+    <!-- Log out dialog -->
+    <string name="logout_title">सभी Acme ऐप से लॉग आउट करें?</string>
+    <string name="logout_body_alone">आप यहाँ से साइन आउट हो जाएँगे। खुले हुए ऐप की पहुँच तुरंत समाप्त हो जाएगी। दोबारा साइन इन करने के लिए आपको अपना OTP चाहिए होगा।</string>
+    <string name="logout_body_with_apps">आप यहाँ और %1$s में साइन आउट हो जाएँगे। खुले हुए ऐप की पहुँच तुरंत समाप्त हो जाएगी। दोबारा साइन इन करने के लिए आपको अपना OTP चाहिए होगा।</string>
+    <string name="logout_body_all">आप यहाँ और हर जुड़े हुए ऐप में साइन आउट हो जाएँगे। दोबारा साइन इन करने के लिए आपको अपना OTP चाहिए होगा।</string>
+    <string name="log_out">लॉग आउट</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="log_out_all_button">सभी Acme ऐप से लॉग आउट करें</string>
+
+    <!-- Signed-in card -->
+    <string name="signed_in_title">आप अपने Acme खाते से साइन इन हैं</string>
+    <string name="greeting">नमस्ते, %1$s</string>
+    <string name="signed_in_hint">इस फ़ोन के अन्य Acme ऐप अब बिना OTP के, एक टैप में आपको साइन इन कर सकते हैं।</string>
+    <string name="open_connected_apps">जुड़े हुए ऐप खोलें</string>
+    <string name="connected_apps">जुड़े हुए ऐप</string>
+    <string name="connected_none">अभी कोई अन्य Acme ऐप आपके साइन-इन का उपयोग नहीं करता</string>
+    <string name="connected_one">1 ऐप आपके साइन-इन का उपयोग करता है: %1$s</string>
+    <string name="connected_many">%1$d ऐप आपके साइन-इन का उपयोग करते हैं</string>
+
+    <!-- Signed-out card -->
+    <string name="not_signed_in">साइन इन नहीं है</string>
+    <string name="signed_out_hint">eSignet से एक बार साइन इन करें, और इस फ़ोन का हर Acme ऐप आपको एक टैप में साइन इन कर सकेगा।</string>
+    <string name="demo_login">डेमो लॉगिन: UIN %1$s, OTP 111111</string>
+    <string name="create_demo_user">डेमो उपयोगकर्ता बनाएँ</string>
+    <string name="sign_in_with_esignet">eSignet से साइन इन करें</string>
+
+    <!-- Technical details -->
+    <string name="tech_device_key">डिवाइस कुंजी (key A)</string>
+    <string name="tech_strongbox">StrongBox सिक्योर एलिमेंट</string>
+    <string name="tech_keystore">Android Keystore (TEE)</string>
+    <string name="tech_client">क्लाइंट</string>
+    <string name="tech_sso_session">SSO सत्र</string>
+    <string name="tech_device_secret">device_secret एन्क्रिप्टेड स्टोरेज में सुरक्षित है</string>
+    <string name="tech_none">कोई नहीं</string>
+    <string name="tech_activity">गतिविधि</string>
+
+    <!-- Connected apps screen -->
+    <string name="connected_intro">ये Acme ऐप आपको आपके Acme खाते से साइन इन करते हैं। इन्हें केवल वही जानकारी मिलती है जिसे साझा करने के लिए आपने सहमति दी है।</string>
+    <string name="connected_empty">अभी तक किसी अन्य Acme ऐप ने आपके साइन-इन का उपयोग नहीं किया है।</string>
+    <string name="connected_signout_hint">किसी ऐप को साइन आउट करते ही वह तुरंत रुक जाता है: उसके हर अनुरोध के लिए इस ऐप की गवाही ज़रूरी है। वह दोबारा तब जुड़ सकता है जब आप उसमें \"Continue with your Acme account\" चुनें।</string>
+    <string name="sign_out_app_title">%1$s को साइन आउट करें?</string>
+    <string name="sign_out_app_body">%1$s आपके Acme साइन-इन का उपयोग बंद कर देगा। अन्य ऐप साइन इन रहेंगे।</string>
+    <string name="sign_out">साइन आउट</string>
+    <string name="not_used_yet">अभी उपयोग नहीं हुआ</string>
+    <string name="last_used">अंतिम उपयोग: %1$s</string>
+    <string name="app_a11y">%1$s, %2$s, %3$s</string>
+    <string name="state_connected">जुड़ा हुआ</string>
+    <string name="state_signed_out">साइन आउट</string>
+    <string name="app_row_connected">जुड़ा हुआ · %1$s</string>
+    <string name="app_row_signed_out">साइन आउट · %1$s</string>
+</resources>

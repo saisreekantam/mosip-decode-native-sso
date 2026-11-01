@@ -1,4 +1,4 @@
-# Native SSO for eSignet Go: sign in once, use every app of the family
+# Native SSO for eSignet Go: sign in once, use every app of the family 
 
 [![CI](https://github.com/saisreekantam/mosip-decode-native-sso/actions/workflows/ci.yml/badge.svg)](https://github.com/saisreekantam/mosip-decode-native-sso/actions/workflows/ci.yml)
 

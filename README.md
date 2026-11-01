@@ -26,7 +26,7 @@ The implementation follows OpenID Connect Native SSO for Mobile Apps 1.0 and the
 | eSignet changes | fork `esignet`, branch `feature/native-sso` | Policy: device secret (signed with ES256, then encrypted as RSA-OAEP JWE through the keymanager), SSO sessions, same-vendor allow-list, consent reuse with an audit column, `POST /native-sso/logout`, config, client registration, DB migration, Postman collection, [design doc](docs/design.md) |
 | Android apps | [`native-sso-android/`](native-sso-android) | **Acme Super App** (eSignet login with PAR + DPoP + PKCE, keys in the Android Keystore, signature-protected SSO service) and **Acme Pharmacy** (silent SSO, step-by-step "why trusted" trace, re-consent fallback), plus a rogue build signed with another certificate |
 | SSO Guardian test lab | [`native-sso-lab/`](native-sso-lab) | 21 end-to-end scenarios (happy path, attacks, consent, races, re-sign-in after token expiry, logout) against a live eSignet, a dashboard to replay any of them, mutation testing, a Postman runner |
-| Docs | [`docs/`](docs) | [Design and API](docs/design.md), [conformance and threat model](docs/conformance.md), [testing and results](docs/testing.md), [demo script](docs/demo-script.md), [submission checklist](docs/submission.md) |
+| Docs | [`docs/`](docs) | [Design and API](docs/design.md), [conformance and threat model](docs/conformance.md), [testing and results](docs/testing.md), [iOS design](docs/ios-design.md), [demo script](docs/demo-script.md), [submission checklist](docs/submission.md) |
 
 ## Since the demo video (v1.0.0 → v1.1.0)
 

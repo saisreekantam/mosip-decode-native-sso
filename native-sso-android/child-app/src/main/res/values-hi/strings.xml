@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="something_went_wrong">कुछ गड़बड़ हो गई</string>
+    <string name="checking_with_esignet">eSignet से जाँच हो रही है…</string>
+    <string name="trace_trusted">यह साइन-इन भरोसेमंद क्यों माना गया</string>
+    <string name="trace_refused">यह साइन-इन अस्वीकार क्यों किया गया</string>
+
+    <!-- Signed-in card -->
+    <string name="welcome">स्वागत है, %1$s</string>
+    <string name="default_user_name">उपयोगकर्ता</string>
+    <string name="signed_in_acme">आप अपने Acme खाते से साइन इन हैं</string>
+    <string name="signed_in_pharmacy">आप Pharmacy में साइन इन हैं</string>
+    <string name="what_pharmacy_sees">Pharmacy क्या देख सकता है</string>
+    <string name="refresh_profile">प्रोफ़ाइल रिफ़्रेश करें</string>
+    <string name="sign_out_here">यहाँ से साइन आउट करें</string>
+
+    <!-- Sign-in choice -->
+    <string name="sign_in_with_acme">अपने Acme खाते से साइन इन करें</string>
+    <string name="pharmacy_will_see">Pharmacy को यह दिखेगा</string>
+    <string name="no_password_hint">पासवर्ड या OTP की ज़रूरत नहीं: आप इस फ़ोन पर Acme सुपर ऐप में पहले से साइन इन हैं।</string>
+    <string name="continue_with_acme">अपने Acme खाते से जारी रखें</string>
+
+    <!-- Consent card -->
+    <string name="consent_needed">आपकी सहमति ज़रूरी है</string>
+    <string name="these_details">ये जानकारियाँ</string>
+    <string name="consent_body">Pharmacy ने आपकी %1$s माँगी हैं। Acme सुपर ऐप में साइन इन करते समय आपने %2$s साझा नहीं किया था, इसलिए Pharmacy को आपसे खुद पूछना होगा।</string>
+    <string name="consent_it">इसे</string>
+    <string name="consent_these">इन्हें</string>
+    <string name="consent_missing">अनुपलब्ध: %1$s</string>
+    <string name="review_and_consent">देखें और सहमति दें</string>
+
+    <!-- Technical details -->
+    <string name="tech_client">क्लाइंट</string>
+    <string name="tech_access_token">एक्सेस टोकन</string>
+    <string name="tech_mode_sso">Native SSO (सुपर ऐप की key A से जुड़ा)</string>
+    <string name="tech_mode_own">अपना लॉगिन (Pharmacy की कुंजी)</string>
+    <string name="tech_userinfo">Userinfo क्लेम</string>
+</resources>

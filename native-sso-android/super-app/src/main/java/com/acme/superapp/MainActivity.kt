@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         session = SuperAppSession.get(this)
         setContent { AcmeTheme(AcmeBrand.SuperApp) { if (showApps.value) ConnectedAppsScreen() else HomeScreen() } }
-        run("Registering with eSignet", silent = true) { session.ensureRegistered() }
+        run(getString(R.string.task_registering), silent = true) { session.ensureRegistered() }
         handleRedirect(intent)
     }
 
@@ -89,7 +90,7 @@ class MainActivity : ComponentActivity() {
     private fun handleRedirect(intent: Intent?) {
         val data = intent?.data ?: return
         if (data.scheme != "com.acme.superapp") return
-        run("Completing eSignet login") { session.completeLogin(data) }
+        run(getString(R.string.task_completing_login)) { session.completeLogin(data) }
     }
 
     /** Runs [block] off the main thread; [silent] keeps the spinner hidden for background work. */
@@ -99,7 +100,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             val result = runCatching { withContext(Dispatchers.IO) { block() } }
             log.add(0, if (result.isSuccess) "✓ $label: ${result.getOrNull()}" else "✗ $label: ${result.exceptionOrNull()?.message}")
-            if (result.isFailure && !silent) error.value = "$label failed. ${result.exceptionOrNull()?.message.orEmpty().take(140)}"
+            if (result.isFailure && !silent) error.value = getString(R.string.task_failed, label, result.exceptionOrNull()?.message.orEmpty().take(140))
             if (!silent) busy.value = null
             refresh.value++
         }
@@ -108,13 +109,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun HomeScreen() {
         refresh.value
-        Scaffold(topBar = { AcmeTopBar("Acme Health", "Super App") }) { padding ->
+        Scaffold(topBar = { AcmeTopBar(stringResource(R.string.brand_title), stringResource(R.string.brand_subtitle)) }) { padding ->
             Column(
                 Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (session.signedIn) SignedInCard() else SignedOutCard()
-                busy.value?.let { BusyRow("$it…") }
+                busy.value?.let { BusyRow(stringResource(R.string.busy_suffix, it)) }
                 error.value?.let {
                     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                         Text(it, Modifier.padding(12.dp), color = MaterialTheme.colorScheme.onErrorContainer)
@@ -126,19 +127,19 @@ class MainActivity : ComponentActivity() {
         if (confirmLogout.value) {
             AlertDialog(
                 onDismissRequest = { confirmLogout.value = false },
-                title = { Text("Log out of all Acme apps?") },
+                title = { Text(stringResource(R.string.logout_title)) },
                 text = {
                     val apps = session.connectedApps.filter { it.connected }.map { it.label }
-                    Text("You will be signed out here" + (if (apps.isEmpty()) "." else " and in ${apps.joinToString()}.") +
-                        " Apps that are open lose access right away. You will need your OTP to sign in again.")
+                    Text(if (apps.isEmpty()) stringResource(R.string.logout_body_alone)
+                        else stringResource(R.string.logout_body_with_apps, apps.joinToString()))
                 },
                 confirmButton = {
                     TextButton(onClick = {
                         confirmLogout.value = false
-                        run("Logging out of all Acme apps") { session.logoutEverywhere() }
-                    }) { Text("Log out") }
+                        run(getString(R.string.task_logging_out)) { session.logoutEverywhere() }
+                    }) { Text(stringResource(R.string.log_out)) }
                 },
-                dismissButton = { TextButton(onClick = { confirmLogout.value = false }) { Text("Cancel") } },
+                dismissButton = { TextButton(onClick = { confirmLogout.value = false }) { Text(stringResource(R.string.cancel)) } },
             )
         }
     }
@@ -151,26 +152,27 @@ class MainActivity : ComponentActivity() {
                     SuccessTick(44.dp)
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text("You're signed in with your Acme account", fontWeight = FontWeight.SemiBold)
-                        session.displayName?.let { Text("Hi, $it", style = MaterialTheme.typography.bodyMedium) }
+                        Text(stringResource(R.string.signed_in_title), fontWeight = FontWeight.SemiBold)
+                        session.displayName?.let { Text(stringResource(R.string.greeting, it), style = MaterialTheme.typography.bodyMedium) }
                     }
                 }
-                Text("Other Acme apps on this phone can now sign you in with one tap, without an OTP.",
+                Text(stringResource(R.string.signed_in_hint),
                     style = MaterialTheme.typography.bodyMedium)
             }
         }
         val apps = session.connectedApps
+        val openApps = stringResource(R.string.open_connected_apps)
         Card(
-            Modifier.fillMaxWidth().clickable(role = Role.Button, onClickLabel = "Open connected apps") { showApps.value = true },
+            Modifier.fillMaxWidth().clickable(role = Role.Button, onClickLabel = openApps) { showApps.value = true },
         ) {
             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Connected apps", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.connected_apps), fontWeight = FontWeight.SemiBold)
                     Text(
                         when (val n = apps.count { it.connected }) {
-                            0 -> "No other Acme app uses your sign-in yet"
-                            1 -> "1 app uses your sign-in: ${apps.first { it.connected }.label}"
-                            else -> "$n apps use your sign-in"
+                            0 -> stringResource(R.string.connected_none)
+                            1 -> stringResource(R.string.connected_one, apps.first { it.connected }.label)
+                            else -> stringResource(R.string.connected_many, n)
                         },
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -178,7 +180,7 @@ class MainActivity : ComponentActivity() {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
             }
         }
-        OutlinedButton(onClick = { confirmLogout.value = true }, enabled = busy.value == null) { Text("Log out of all Acme apps") }
+        OutlinedButton(onClick = { confirmLogout.value = true }, enabled = busy.value == null) { Text(stringResource(R.string.log_out_all_button)) }
     }
 
     @Composable
@@ -188,53 +190,54 @@ class MainActivity : ComponentActivity() {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(8.dp))
-                    Text("Not signed in", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.not_signed_in), fontWeight = FontWeight.SemiBold)
                 }
-                Text("Sign in once with eSignet, and every Acme app on this phone can sign you in with one tap.",
+                Text(stringResource(R.string.signed_out_hint),
                     style = MaterialTheme.typography.bodyMedium)
-                demoUin.value?.let { Text("Demo login: UIN $it, OTP 111111", style = MaterialTheme.typography.bodyMedium) }
+                demoUin.value?.let { Text(stringResource(R.string.demo_login, it), style = MaterialTheme.typography.bodyMedium) }
                 OutlinedButton(onClick = {
-                    run("Creating demo identity") {
+                    val creating = getString(R.string.task_creating_demo)
+                    run(creating) {
                         // One fixed, easy-to-type demo identity; reused when it already exists.
                         val uin = DEMO_UIN
                         val res = DevProvisioning.createMockIdentity(MOCK_IDENTITY_URL, uin, "Asha Devi")
                         val exists = res.body.contains("duplicate_individual_id")
                         check(res.status == 200 && (!res.body.contains("errorCode") || exists)) { res.body }
                         demoUin.value = uin
-                        (if (exists) "using existing" else "created") + " UIN $uin (OTP 111111)"
+                        getString(if (exists) R.string.demo_using_existing else R.string.demo_created, uin)
                     }
-                }, enabled = busy.value == null) { Text("Create demo user") }
+                }, enabled = busy.value == null) { Text(stringResource(R.string.create_demo_user)) }
                 Button(onClick = {
-                    run("Starting eSignet login (PAR + DPoP)") {
+                    run(getString(R.string.task_starting_login)) {
                         val pending = session.startLogin()
                         withContext(Dispatchers.Main) {
                             LoginLauncher.open(this@MainActivity, pending.authorizeUrl, SuperAppSession.REDIRECT_URI)
                         }
-                        "opened the eSignet login UI"
+                        getString(R.string.opened_login_ui)
                     }
-                }, enabled = busy.value == null) { Text("Sign in with eSignet") }
+                }, enabled = busy.value == null) { Text(stringResource(R.string.sign_in_with_esignet)) }
             }
         }
     }
 
     @Composable
     private fun TechnicalDetails() {
-        Text("Device key (key A)", fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.tech_device_key), fontWeight = FontWeight.SemiBold)
         Mono("jkt ${session.deviceKey.thumbprint}")
-        Mono(if (session.deviceKey.strongBox) "StrongBox secure element" else "Android Keystore (TEE)")
-        Text("Client", fontWeight = FontWeight.SemiBold)
+        Mono(stringResource(if (session.deviceKey.strongBox) R.string.tech_strongbox else R.string.tech_keystore))
+        Text(stringResource(R.string.tech_client), fontWeight = FontWeight.SemiBold)
         Mono(session.clientId)
         Mono("eSignet ${BuildConfig.ESIGNET_ISSUER}")
         session.idToken?.let { idToken ->
             val claims = Jose.payload(idToken)
-            Text("SSO session", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.tech_sso_session), fontWeight = FontWeight.SemiBold)
             Mono("sid ${claims.optString("sid")}")
             Mono("ds_hash ${claims.optString("ds_hash")}")
-            Mono("device_secret held in encrypted storage")
-            Mono("allow-list ${session.siblings.ifEmpty { listOf("none") }.joinToString()}")
+            Mono(stringResource(R.string.tech_device_secret))
+            Mono("allow-list ${session.siblings.ifEmpty { listOf(stringResource(R.string.tech_none)) }.joinToString()}")
         }
         if (log.isNotEmpty()) {
-            Text("Activity", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.tech_activity), fontWeight = FontWeight.SemiBold)
             log.forEach { Mono(it) }
         }
     }
@@ -243,74 +246,76 @@ class MainActivity : ComponentActivity() {
     private fun ConnectedAppsScreen() {
         refresh.value
         BackHandler { showApps.value = false }
-        Scaffold(topBar = { AcmeTopBar("Connected apps", onBack = { showApps.value = false }) }) { padding ->
+        Scaffold(topBar = { AcmeTopBar(stringResource(R.string.connected_apps_title), onBack = { showApps.value = false }) }) { padding ->
             Column(
                 Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text("These Acme apps sign you in with your Acme account. They only get the details you agreed to share.",
+                Text(stringResource(R.string.connected_intro),
                     style = MaterialTheme.typography.bodyMedium)
                 val apps = session.connectedApps
                 if (apps.isEmpty()) {
-                    Text("No other Acme app has used your sign-in yet.", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.connected_empty), style = MaterialTheme.typography.bodyLarge)
                 }
                 apps.forEach { app -> AppRow(app) }
                 if (apps.isNotEmpty()) {
-                    Text("Signing an app out stops it right away: it needs this app to vouch for every request it makes. " +
-                        "It can join again when you choose \"Continue with your Acme account\" in it.",
+                    Text(stringResource(R.string.connected_signout_hint),
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 OutlinedButton(onClick = { confirmLogout.value = true }, enabled = busy.value == null && session.signedIn) {
-                    Text("Log out of all Acme apps")
+                    Text(stringResource(R.string.log_out_all_button))
                 }
             }
         }
         confirmSignOutApp.value?.let { app ->
             AlertDialog(
                 onDismissRequest = { confirmSignOutApp.value = null },
-                title = { Text("Sign out ${app.label}?") },
-                text = { Text("${app.label} will stop using your Acme sign-in. Other apps stay signed in.") },
+                title = { Text(stringResource(R.string.sign_out_app_title, app.label)) },
+                text = { Text(stringResource(R.string.sign_out_app_body, app.label)) },
                 confirmButton = {
                     TextButton(onClick = {
                         confirmSignOutApp.value = null
-                        run("Signing out ${app.label}") { session.signOutApp(app.packageName) }
-                    }) { Text("Sign out") }
+                        run(getString(R.string.task_signing_out_app, app.label)) { session.signOutApp(app.packageName) }
+                    }) { Text(stringResource(R.string.sign_out)) }
                 },
-                dismissButton = { TextButton(onClick = { confirmSignOutApp.value = null }) { Text("Cancel") } },
+                dismissButton = { TextButton(onClick = { confirmSignOutApp.value = null }) { Text(stringResource(R.string.cancel)) } },
             )
         }
         if (confirmLogout.value) {
             AlertDialog(
                 onDismissRequest = { confirmLogout.value = false },
-                title = { Text("Log out of all Acme apps?") },
-                text = { Text("You will be signed out here and in every connected app. You will need your OTP to sign in again.") },
+                title = { Text(stringResource(R.string.logout_title)) },
+                text = { Text(stringResource(R.string.logout_body_all)) },
                 confirmButton = {
                     TextButton(onClick = {
                         confirmLogout.value = false
                         showApps.value = false
-                        run("Logging out of all Acme apps") { session.logoutEverywhere() }
-                    }) { Text("Log out") }
+                        run(getString(R.string.task_logging_out)) { session.logoutEverywhere() }
+                    }) { Text(stringResource(R.string.log_out)) }
                 },
-                dismissButton = { TextButton(onClick = { confirmLogout.value = false }) { Text("Cancel") } },
+                dismissButton = { TextButton(onClick = { confirmLogout.value = false }) { Text(stringResource(R.string.cancel)) } },
             )
         }
     }
 
     @Composable
     private fun AppRow(app: ConnectedApp) {
-        val used = if (app.lastUsed == 0L) "Not used yet" else "Last used " +
-            DateUtils.getRelativeTimeSpanString(app.lastUsed, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)
+        val used = if (app.lastUsed == 0L) stringResource(R.string.not_used_yet) else stringResource(R.string.last_used,
+            DateUtils.getRelativeTimeSpanString(app.lastUsed, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS))
+        val state = stringResource(if (app.connected) R.string.state_connected else R.string.state_signed_out)
+        val a11y = stringResource(R.string.app_a11y, app.label, state, used)
+        val rowText = stringResource(if (app.connected) R.string.app_row_connected else R.string.app_row_signed_out, used)
         Card(Modifier.fillMaxWidth()) {
             Row(Modifier.padding(16.dp).semantics(mergeDescendants = true) {
-                contentDescription = "${app.label}, ${if (app.connected) "connected" else "signed out"}, $used"
+                contentDescription = a11y
             }, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(app.label, fontWeight = FontWeight.SemiBold)
-                    Text(if (app.connected) "Connected · $used" else "Signed out · $used", style = MaterialTheme.typography.bodySmall)
+                    Text(rowText, style = MaterialTheme.typography.bodySmall)
                     if (developer.value && app.clientId.isNotEmpty()) Mono(app.clientId)
                 }
                 if (app.connected) {
-                    OutlinedButton(onClick = { confirmSignOutApp.value = app }, enabled = busy.value == null) { Text("Sign out") }
+                    OutlinedButton(onClick = { confirmSignOutApp.value = app }, enabled = busy.value == null) { Text(stringResource(R.string.sign_out)) }
                 }
             }
         }

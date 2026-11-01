@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Top bars -->
+    <string name="brand_title">Acme Health</string>
+    <string name="brand_subtitle">Super App</string>
+    <string name="connected_apps_title">Connected apps</string>
+
+    <!-- Progress labels (also shown in the activity log) -->
+    <string name="task_registering">Registering with eSignet</string>
+    <string name="task_completing_login">Completing eSignet login</string>
+    <string name="task_logging_out">Logging out of all Acme apps</string>
+    <string name="task_creating_demo">Creating demo identity</string>
+    <string name="task_starting_login">Starting eSignet login (PAR + DPoP)</string>
+    <string name="task_signing_out_app">Signing out %1$s</string>
+    <string name="busy_suffix">%1$s…</string>
+    <string name="task_failed">%1$s failed. %2$s</string>
+    <string name="opened_login_ui">opened the eSignet login UI</string>
+    <string name="demo_using_existing">using existing UIN %1$s (OTP 111111)</string>
+    <string name="demo_created">created UIN %1$s (OTP 111111)</string>
+
+    <!-- Log out dialog -->
+    <string name="logout_title">Log out of all Acme apps?</string>
+    <string name="logout_body_alone">You will be signed out here. Apps that are open lose access right away. You will need your OTP to sign in again.</string>
+    <string name="logout_body_with_apps">You will be signed out here and in %1$s. Apps that are open lose access right away. You will need your OTP to sign in again.</string>
+    <string name="logout_body_all">You will be signed out here and in every connected app. You will need your OTP to sign in again.</string>
+    <string name="log_out">Log out</string>
+    <string name="cancel">Cancel</string>
+    <string name="log_out_all_button">Log out of all Acme apps</string>
+
+    <!-- Signed-in card -->
+    <string name="signed_in_title">You\'re signed in with your Acme account</string>
+    <string name="greeting">Hi, %1$s</string>
+    <string name="signed_in_hint">Other Acme apps on this phone can now sign you in with one tap, without an OTP.</string>
+    <string name="open_connected_apps">Open connected apps</string>
+    <string name="connected_apps">Connected apps</string>
+    <string name="connected_none">No other Acme app uses your sign-in yet</string>
+    <string name="connected_one">1 app uses your sign-in: %1$s</string>
+    <string name="connected_many">%1$d apps use your sign-in</string>
+
+    <!-- Signed-out card -->
+    <string name="not_signed_in">Not signed in</string>
+    <string name="signed_out_hint">Sign in once with eSignet, and every Acme app on this phone can sign you in with one tap.</string>
+    <string name="demo_login">Demo login: UIN %1$s, OTP 111111</string>
+    <string name="create_demo_user">Create demo user</string>
+    <string name="sign_in_with_esignet">Sign in with eSignet</string>
+
+    <!-- Technical details -->
+    <string name="tech_device_key">Device key (key A)</string>
+    <string name="tech_strongbox">StrongBox secure element</string>
+    <string name="tech_keystore">Android Keystore (TEE)</string>
+    <string name="tech_client">Client</string>
+    <string name="tech_sso_session">SSO session</string>
+    <string name="tech_device_secret">device_secret held in encrypted storage</string>
+    <string name="tech_none">none</string>
+    <string name="tech_activity">Activity</string>
+
+    <!-- Connected apps screen -->
+    <string name="connected_intro">These Acme apps sign you in with your Acme account. They only get the details you agreed to share.</string>
+    <string name="connected_empty">No other Acme app has used your sign-in yet.</string>
+    <string name="connected_signout_hint">Signing an app out stops it right away: it needs this app to vouch for every request it makes. It can join again when you choose \"Continue with your Acme account\" in it.</string>
+    <string name="sign_out_app_title">Sign out %1$s?</string>
+    <string name="sign_out_app_body">%1$s will stop using your Acme sign-in. Other apps stay signed in.</string>
+    <string name="sign_out">Sign out</string>
+    <string name="not_used_yet">Not used yet</string>
+    <string name="last_used">Last used %1$s</string>
+    <string name="app_a11y">%1$s, %2$s, %3$s</string>
+    <string name="state_connected">connected</string>
+    <string name="state_signed_out">signed out</string>
+    <string name="app_row_connected">Connected · %1$s</string>
+    <string name="app_row_signed_out">Signed out · %1$s</string>
+</resources>

@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
         busy.value = true
         lifecycleScope.launch {
             runCatching { withContext(Dispatchers.IO) { block() } }
-                .onFailure { trace.add(TraceStep(false, "Something went wrong", it.message ?: it.toString())) }
+                .onFailure { trace.add(TraceStep(false, getString(R.string.something_went_wrong), it.message ?: it.toString())) }
             busy.value = false
         }
     }
@@ -119,12 +120,12 @@ class MainActivity : ComponentActivity() {
             if (p != null) SignedIn(p) else SignInChoice()
 
             consentNeeded.value?.let { missing -> ConsentCard(missing) }
-            if (busy.value) BusyRow("Checking with eSignet…")
+            if (busy.value) BusyRow(stringResource(R.string.checking_with_esignet))
 
             if (trace.isNotEmpty()) {
                 // A new list each time so the timeline replays its entrance for every attempt.
                 TrustTimeline(
-                    if (trace.all { it.ok }) "Why this sign-in was trusted" else "Why this sign-in was refused",
+                    stringResource(if (trace.all { it.ok }) R.string.trace_trusted else R.string.trace_refused),
                     trace.toList(), showDetails = developer.value,
                 )
             }
@@ -140,57 +141,56 @@ class MainActivity : ComponentActivity() {
                     SuccessTick(44.dp)
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text("Welcome, ${p.optString("name", "user")}", fontWeight = FontWeight.SemiBold)
-                        Text(if (session.mode == "sso") "You're signed in with your Acme account" else "You're signed in to Pharmacy",
+                        Text(stringResource(R.string.welcome, p.optString("name", stringResource(R.string.default_user_name))), fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(if (session.mode == "sso") R.string.signed_in_acme else R.string.signed_in_pharmacy),
                             style = MaterialTheme.typography.bodyMedium)
                     }
                 }
-                Text("What Pharmacy can see", fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 6.dp))
+                Text(stringResource(R.string.what_pharmacy_sees), fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 6.dp))
                 p.keys().asSequence().mapNotNull { k -> Details.label(k)?.takeIf { k != "picture" }?.let { it to p.optString(k) } }
                     .forEach { (label, value) -> Field(label, value) }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { work { show(session.refreshProfile()) } }, enabled = !busy.value) { Text("Refresh profile") }
-            OutlinedButton(onClick = { session.signOut(); profile.value = null; trace.clear() }) { Text("Sign out here") }
+            OutlinedButton(onClick = { work { show(session.refreshProfile()) } }, enabled = !busy.value) { Text(stringResource(R.string.refresh_profile)) }
+            OutlinedButton(onClick = { session.signOut(); profile.value = null; trace.clear() }) { Text(stringResource(R.string.sign_out_here)) }
         }
     }
 
     @Composable
     private fun SignInChoice() {
-        Text("Sign in with your Acme account", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.sign_in_with_acme), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(selected = !askEmail.value, onClick = { askEmail.value = false }, label = { Text("profile") })
             FilterChip(selected = askEmail.value, onClick = { askEmail.value = true }, label = { Text("profile + email") })
         }
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Pharmacy will see", fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.pharmacy_will_see), fontWeight = FontWeight.Medium)
                 Text(Details.forScope(scope).joinToString(", "), style = MaterialTheme.typography.bodyLarge)
-                Text("No password or OTP: you are already signed in to Acme Super App on this phone.",
+                Text(stringResource(R.string.no_password_hint),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp))
             }
         }
         Button(onClick = { work { show(session.signInWithSso(scope)) } }, enabled = !busy.value, modifier = Modifier.fillMaxWidth()) {
-            Text("Continue with your Acme account")
+            Text(stringResource(R.string.continue_with_acme))
         }
     }
 
     @Composable
     private fun ConsentCard(missing: String) {
-        val details = Details.forScope(missing).ifEmpty { listOf("these details") }
+        val details = Details.forScope(missing).ifEmpty { listOf(stringResource(R.string.these_details)) }
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Info, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Your consent is needed", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.consent_needed), fontWeight = FontWeight.SemiBold)
                 }
-                Text("Pharmacy asked for your ${details.joinToString(", ").lowercase()}. " +
-                    "You did not share ${if (details.size == 1) "it" else "these"} when you signed in to Acme Super App, " +
-                    "so Pharmacy has to ask you itself.")
-                Text("Missing: ${details.joinToString(", ")}", fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.consent_body, details.joinToString(", ").lowercase(),
+                    stringResource(if (details.size == 1) R.string.consent_it else R.string.consent_these)))
+                Text(stringResource(R.string.consent_missing, details.joinToString(", ")), fontWeight = FontWeight.Medium)
                 Button(onClick = {
                     work {
                         val pending = session.startConsentLogin(scope)
@@ -198,27 +198,27 @@ class MainActivity : ComponentActivity() {
                             LoginLauncher.open(this@MainActivity, pending.authorizeUrl, ChildSession.REDIRECT_URI)
                         }
                     }
-                }, enabled = !busy.value) { Text("Review and consent") }
+                }, enabled = !busy.value) { Text(stringResource(R.string.review_and_consent)) }
             }
         }
     }
 
     @Composable
     private fun TechnicalDetails(p: JSONObject?) {
-        Text("Client", fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.tech_client), fontWeight = FontWeight.SemiBold)
         Mono(session.clientId)
         if (status.value.isNotEmpty()) Mono(status.value)
         session.accessToken?.let { token ->
             val at = Jose.payload(token)
-            Text("Access token", fontWeight = FontWeight.SemiBold)
-            Mono("mode ${if (session.mode == "sso") "Native SSO (bound to the Super App's key A)" else "own login (Pharmacy's key)"}")
+            Text(stringResource(R.string.tech_access_token), fontWeight = FontWeight.SemiBold)
+            Mono("mode ${stringResource(if (session.mode == "sso") R.string.tech_mode_sso else R.string.tech_mode_own)}")
             Mono("scope ${at.optString("scope")}")
             Mono("cnf.jkt ${at.optJSONObject("cnf")?.optString("jkt").orEmpty()}")
             at.optJSONObject("act")?.let { Mono("act.sub ${it.optString("sub")}") }
             Mono("expires ${java.util.Date(at.optLong("exp") * 1000)}")
         }
         p?.let {
-            Text("Userinfo claims", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.tech_userinfo), fontWeight = FontWeight.SemiBold)
             it.keys().asSequence().forEach { k -> Mono("$k: ${it.optString(k).take(60)}") }
         }
     }
